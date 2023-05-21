@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use super::test_context::TestContextPostgreSQL;
 use crate::utils::utils_file::read_from_file;
-use animal_facts_api::adapters::spi::http::http_models::{CatFactApiModel, CatFactsApiModel};
+use adapters_spi_http::http::http_models::{CatFactApiModel, CatFactsApiModel};
 
 pub fn spawn_app(db_name: &str) -> String {
     // Let the OS assign a port (:0)

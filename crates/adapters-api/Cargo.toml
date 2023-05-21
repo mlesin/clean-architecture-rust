@@ -1,0 +1,17 @@
+[package]
+name = "adapters-api"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+domain.workspace = true
+application.workspace = true
+adapters-spi-db.workspace = true   # WTF???
+adapters-spi-http.workspace = true # WTF???
+# External dependencies
+actix-web = { workspace = true, features = ["openssl"] }
+derive_more.workspace = true
+serde.workspace = true
+thiserror.workspace = true

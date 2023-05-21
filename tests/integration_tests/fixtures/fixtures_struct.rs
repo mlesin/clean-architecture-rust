@@ -1,4 +1,4 @@
-use animal_facts_api::adapters::spi::db::schema::*;
+use adapters_spi_db::db::schema::*;
 use diesel::Insertable;
 use serde::Deserialize;
 

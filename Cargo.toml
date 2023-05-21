@@ -14,25 +14,62 @@ name = "animal_facts_api"
 path = "src/lib.rs"
 
 [dependencies]
-actix-web = { version = "4", features = ["openssl"] }
-actix-rt = "~2.7"
-actix-http = "~3.0"
+domain.workspace = true
+application.workspace = true
+adapters-spi-db.workspace = true
+adapters-spi-http.workspace = true
+adapters-api.workspace = true
+# External dependencies
+actix-web = { workspace = true, features = ["openssl"] }
+dotenv.workspace = true
+env_logger.workspace = true
+log.workspace = true
+
+[dev-dependencies]
+actix-rt.workspace = true
+cargo-tarpaulin.workspace = true
+diesel = { workspace = true, features = ["postgres", "r2d2", "uuidv07"] }
+diesel_migrations.workspace = true
+mockall.workspace = true
+reqwest = { workspace = true, features = ["json"] }
+serde_json.workspace = true
+serde.workspace = true
+tokio = { workspace = true, features = ["full"] }
+uuid = { workspace = true, features = ["serde", "v4"] }
+
+[workspace]
+members = [
+    "crates/domain",
+    "crates/application",
+    "crates/adapters-spi-db",
+    "crates/adapters-spi-http",
+    "crates/adapters-api",
+]
+
+[workspace.dependencies]
+domain = { path = "./crates/domain" }
+application = { path = "./crates/application" }
+adapters-spi-db = { path = "./crates/adapters-spi-db" }
+adapters-spi-http = { path = "./crates/adapters-spi-http" }
+adapters-api = { path = "./crates/adapters-api" }
+# External dependencies
+actix-web = "4"
+actix-rt = "~2"
+actix-http = "~3"
 log = "~0.4.0"
-env_logger = "~0.9"
+env_logger = "~0.10"
 failure = "~0.1"
 serde = "~1.0"
 serde_json = "~1.0"
 async-trait = "~0.1"
-diesel = { version = "~1.4", features = ["postgres", "r2d2", "uuidv07"] }
+diesel = "~1.4"
 diesel_migrations = "~1.4"
 dotenv = "~0.15"
 r2d2 = "~0.8"
-tokio = { version = "~1.18", features = ["full"] }
+tokio = "~1"
 thiserror = "~1.0"
 derive_more = "~0.99"
-reqwest={version="0.11", features = ["json"]}
-
-[dev-dependencies]
-cargo-tarpaulin = "~0.20"
-uuid = { version = "~1.0", features = ["serde", "v4"] }
+reqwest = "0.11"
+cargo-tarpaulin = "~0.25"
+uuid = "~1"
 mockall = "~0.11"
