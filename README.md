@@ -2,17 +2,17 @@
 
 A Clean Architecture template for a Rest API in rust
 
-# How it works
+## How it works
 
 Motivations, explanations, requirements & more details in my article [Practical Clean Architecture in Typescript, Rust & Python](https://dev.to/msc29/practical-clean-architecture-in-typescript-rust-python-3a6d)
 
-# Installing
+## Installing
 
 ```bash
 cargo build
 ```
 
-# Database setup
+## Database setup
 
 It's currently configured to run with PostgreSQL through Diesel (ORM), but this being clean architecture feel free to change it :)
 
@@ -28,7 +28,7 @@ diesel setup --database-url postgresql://postgres:postgres@localhost/animal_fact
 diesel migration run --database-url postgresql://postgres:postgres@localhost/animal_fact_db
 ```
 
-# Running
+## Running
 
 define the environment on which we're running by adding `ENV=<env>`, which will use the `.env.<env>` file
 
@@ -36,7 +36,7 @@ define the environment on which we're running by adding `ENV=<env>`, which will 
 ENV=dev cargo run
 ```
 
-# Code quality & security
+## Code quality & security
 
 Used in CI/CD
 
@@ -47,7 +47,7 @@ cargo audit
 cargo outdated
 ```
 
-# Testing
+## Testing
 
 Here's what done in order to mock the SPI
 
@@ -58,6 +58,6 @@ Here's what done in order to mock the SPI
 ENV=test cargo test
 ```
 
-# API Documentation
+## API Documentation
 
-TODO: https://github.com/paperclip-rs/paperclip
+TODO: <https://github.com/paperclip-rs/paperclip>
