@@ -3,8 +3,8 @@ use std::{env, net::TcpListener};
 use actix_web::{dev::Server, middleware::Logger};
 use actix_web::{web, App, HttpServer};
 use adapters_api::shared::app_state::AppState;
-use adapters_spi_db::db::{db_connection::DbConnection, db_dog_facts_repository::DogFactsRepositoryDB};
-use adapters_spi_http::http::{http_cat_facts_repository::CatFactsRepositoryHTTP, http_connection::HttpConnection};
+use adapters_spi_db::{db_connection::DbConnection, db_dog_facts_repository::DogFactsRepositoryDB};
+use adapters_spi_http::{http_cat_facts_repository::CatFactsRepositoryHTTP, http_connection::HttpConnection};
 
 pub fn server(listener: TcpListener, db_name: &str) -> Result<Server, std::io::Error> {
     env::set_var("RUST_BACKTRACE", "1");

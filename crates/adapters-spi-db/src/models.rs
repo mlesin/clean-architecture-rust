@@ -1,4 +1,4 @@
-use crate::db::schema::*;
+use crate::schema::*;
 
 #[derive(Queryable, QueryableByName)]
 #[diesel(table_name = dog_facts)]

@@ -1,5 +1,5 @@
 use crate::integration_tests::fixtures::fixtures_run;
-use adapters_spi_db::db::db_connection::DbConnection;
+use adapters_spi_db::db_connection::DbConnection;
 use diesel::RunQueryDsl;
 use fixtures_run::execute_imports;
 

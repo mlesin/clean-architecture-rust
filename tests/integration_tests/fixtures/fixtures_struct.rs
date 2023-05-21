@@ -1,4 +1,4 @@
-use adapters_spi_db::db::schema::*;
+use adapters_spi_db::schema::*;
 use diesel::Insertable;
 use serde::Deserialize;
 

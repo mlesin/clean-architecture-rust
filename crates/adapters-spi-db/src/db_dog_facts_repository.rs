@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use diesel::prelude::*;
 use std::error::Error;
 
-use crate::db::{db_connection::DbConnection, db_mappers::DogFactDbMapper, models::DogFact, schema::dog_facts::dsl::*};
+use crate::{db_connection::DbConnection, db_mappers::DogFactDbMapper, models::DogFact, schema::dog_facts::dsl::*};
 use application::{mappers::spi_mapper::SpiMapper, repositories::dog_facts::DogFactsRepository};
 use domain::dog_fact_entity::DogFactEntity;
 

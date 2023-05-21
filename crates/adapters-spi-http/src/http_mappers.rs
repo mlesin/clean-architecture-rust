@@ -1,4 +1,4 @@
-use crate::http::http_models::CatFactApiModel;
+use crate::http_models::CatFactApiModel;
 use application::mappers::spi_mapper::SpiMapper;
 use domain::cat_fact_entity::CatFactEntity;
 

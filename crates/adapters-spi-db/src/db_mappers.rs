@@ -1,4 +1,4 @@
-use crate::db::models::DogFact;
+use crate::models::DogFact;
 use application::mappers::spi_mapper::SpiMapper;
 use domain::dog_fact_entity::DogFactEntity;
 

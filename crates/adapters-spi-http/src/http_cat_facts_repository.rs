@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use std::error::Error;
 
-use crate::http::{
+use crate::{
     http_connection::HttpConnection,
     http_mappers::CatFactHttpMapper,
     http_models::{CatFactApiModel, CatFactsApiModel},
