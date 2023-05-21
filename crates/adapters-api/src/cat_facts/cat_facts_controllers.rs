@@ -13,7 +13,7 @@ pub fn routes(cfg: &mut web::ServiceConfig) {
 
 #[get("/")]
 async fn get_all_cat_facts(data: web::Data<AppState>) -> Result<HttpResponse, ErrorReponse> {
-    let get_all_cat_facts_usecase = GetAllCatFactsUseCase::new(&data.cats_repository);
+    let get_all_cat_facts_usecase = GetAllCatFactsUseCase::new(&*data.cats_repository);
     let cat_facts = get_all_cat_facts_usecase.execute().await;
 
     cat_facts
@@ -23,7 +23,7 @@ async fn get_all_cat_facts(data: web::Data<AppState>) -> Result<HttpResponse, Er
 
 #[get("/random")]
 async fn get_one_random_cat_fact(data: web::Data<AppState>) -> Result<HttpResponse, ErrorReponse> {
-    let get_one_random_cat_fact_usecase = GetOneRandomCatFactUseCase::new(&data.cats_repository);
+    let get_one_random_cat_fact_usecase = GetOneRandomCatFactUseCase::new(&*data.cats_repository);
     let cat_fact = get_one_random_cat_fact_usecase.execute().await;
 
     cat_fact

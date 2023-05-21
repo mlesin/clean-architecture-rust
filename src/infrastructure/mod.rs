@@ -17,11 +17,11 @@ pub fn server(listener: TcpListener, db_name: &str) -> Result<Server, std::io::E
 
     let data = web::Data::new(AppState {
         app_name: String::from("Animal Facts API"),
-        cats_repository: CatFactsRepositoryHTTP {
+        cats_repository: Box::new(CatFactsRepositoryHTTP {
             http_connection,
             source: dotenv::var("CATS_SOURCE").expect("CATS_SOURCE must be set"),
-        },
-        dogs_repository: DogFactsRepositoryDB { db_connection },
+        }),
+        dogs_repository: Box::new(DogFactsRepositoryDB { db_connection }),
     });
 
     let port = listener.local_addr().unwrap().port();

@@ -1,8 +1,7 @@
-use adapters_spi_db::db_dog_facts_repository::DogFactsRepositoryDB;
-use adapters_spi_http::http_cat_facts_repository::CatFactsRepositoryHTTP;
+use application::repositories::{cat_facts::CatFactsRepository, dog_facts::DogFactsRepository};
 
 pub struct AppState {
     pub app_name: String,
-    pub cats_repository: CatFactsRepositoryHTTP,
-    pub dogs_repository: DogFactsRepositoryDB,
+    pub cats_repository: Box<dyn CatFactsRepository + Send + Sync>,
+    pub dogs_repository: Box<dyn DogFactsRepository + Send + Sync>,
 }

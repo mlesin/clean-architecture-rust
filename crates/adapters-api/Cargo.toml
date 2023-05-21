@@ -8,8 +8,6 @@ edition = "2021"
 [dependencies]
 domain.workspace = true
 application.workspace = true
-adapters-spi-db.workspace = true   # WTF???
-adapters-spi-http.workspace = true # WTF???
 # External dependencies
 actix-web = { workspace = true, features = ["openssl"] }
 derive_more.workspace = true
