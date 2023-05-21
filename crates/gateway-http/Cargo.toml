@@ -11,4 +11,4 @@ business.workspace = true
 # External dependencies
 async-trait.workspace = true
 reqwest = { workspace = true, features = ["json"] }
-serde.workspace = true
+serde = { workspace = true, features = ["derive"] }

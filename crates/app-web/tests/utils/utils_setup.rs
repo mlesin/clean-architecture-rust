@@ -12,11 +12,12 @@ pub fn spawn_app(db_name: &str) -> String {
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
 
     let port = listener.local_addr().unwrap().port();
-    let server = animal_facts_api::run(listener, db_name).expect("Failed to bind address");
+
+    let server = app_web::setup(listener, db_name).expect("Failed to bind address");
 
     let _ = tokio::spawn(server);
 
-    if TcpStream::connect("localhost:3333").is_ok() {
+    if TcpStream::connect("127.0.0.1:3333").is_ok() {
         println!("Http source faked server already running");
     } else {
         spawn_http_spi();
@@ -39,7 +40,7 @@ pub fn spawn_http_spi() -> String {
     }
 
     let s1 = HttpServer::new(move || App::new().route("facts", web::get().to(facts_route)).route("fact", web::get().to(random_fact_route)))
-        .bind("0.0.0.0:3333")
+        .bind("127.0.0.1:3333")
         .expect("woops")
         .run();
 

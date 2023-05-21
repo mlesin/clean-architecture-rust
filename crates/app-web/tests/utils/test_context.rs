@@ -4,7 +4,7 @@ use fixtures_run::execute_imports;
 use gateway_pg::connection::DbConnection;
 
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, HarnessWithOutput, MigrationHarness};
-pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("../../migrations");
 
 pub struct TestContextPostgreSQL {
     pub base_url: String,

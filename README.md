@@ -55,7 +55,7 @@ Here's what done in order to mock the SPI
 - http: every test also spins up another rust api (if not already up) with the expected routes but test data in `test/fixtures`
 
 ```bash
-ENV=test cargo test
+ENV=test cargo test --workspace
 ```
 
 ## API Documentation
