@@ -30,12 +30,12 @@ mod tests {
     use super::*;
     use std::io::{Error, ErrorKind};
 
-    use crate::{gateways::cat_facts::CatFactsGateway, usecases::get_one_random_cat_fact::GetOneRandomCatFactUseCase};
+    use crate::{gateways::cat_facts::MockCatFactsGateway, usecases::get_one_random_cat_fact::GetOneRandomCatFactUseCase};
 
     #[actix_rt::test]
     async fn test_should_return_generic_message_when_unexpected_repo_error() {
         // given the "all cat facts" usecase repo with an unexpected error
-        let mut cat_fact_gateway = CatFactsGateway::new();
+        let mut cat_fact_gateway = MockCatFactsGateway::new();
         cat_fact_gateway
             .expect_get_random_cat_fact()
             .with()
@@ -55,7 +55,7 @@ mod tests {
     #[actix_rt::test]
     async fn test_should_return_one_result() {
         // given the "one random cat fact" usecase repo returning one result
-        let mut cat_fact_gateway = CatFactsGateway::new();
+        let mut cat_fact_gateway = MockCatFactsGateway::new();
         cat_fact_gateway.expect_get_random_cat_fact().with().times(1).returning(|| {
             Ok(CatFactEntity {
                 fact_txt: String::from("fact1"),

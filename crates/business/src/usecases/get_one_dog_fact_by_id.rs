@@ -32,13 +32,13 @@ mod tests {
     use mockall::predicate::eq;
     use std::io::{Error, ErrorKind};
 
-    use crate::gateways::dog_facts::DogFactsGateway;
+    use crate::gateways::dog_facts::MockDogFactsGateway;
     use entities::dog_fact_entity::DogFactEntity;
 
     #[actix_rt::test]
     async fn test_should_return_error_with_generic_message_when_unexpected_repo_error() {
         // given the "all dog facts" usecase repo with an unexpected random error
-        let mut dog_fact_gateway = DogFactsGateway::new();
+        let mut dog_fact_gateway = MockDogFactsGateway::new();
         dog_fact_gateway
             .expect_get_dog_fact_by_id()
             .with(eq(1))
@@ -58,7 +58,7 @@ mod tests {
     #[actix_rt::test]
     async fn test_should_return_one_result() {
         // given the "one dog fact by id" usecase repo returning one result
-        let mut dog_fact_gateway = DogFactsGateway::new();
+        let mut dog_fact_gateway = MockDogFactsGateway::new();
         dog_fact_gateway.expect_get_dog_fact_by_id().with(eq(1)).times(1).returning(|_| {
             Ok(DogFactEntity {
                 fact_id: 1,

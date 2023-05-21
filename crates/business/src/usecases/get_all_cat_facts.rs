@@ -30,12 +30,12 @@ mod tests {
     use super::*;
     use std::io::{Error, ErrorKind};
 
-    use crate::gateways::cat_facts::CatFactsGateway;
+    use crate::gateways::cat_facts::MockCatFactsGateway;
 
     #[actix_rt::test]
     async fn test_should_return_generic_message_when_unexpected_repo_error() {
         // given the "all cat facts" usecase repo with an unexpected error
-        let mut cat_fact_gateway = CatFactsGateway::new();
+        let mut cat_fact_gateway = MockCatFactsGateway::new();
         cat_fact_gateway
             .expect_get_all_cat_facts()
             .with()
@@ -55,7 +55,7 @@ mod tests {
     #[actix_rt::test]
     async fn test_should_return_empty_list() {
         // given the "all cat facts" usecase repo returning an empty list
-        let mut cat_fact_gateway = CatFactsGateway::new();
+        let mut cat_fact_gateway = MockCatFactsGateway::new();
         cat_fact_gateway.expect_get_all_cat_facts().with().times(1).returning(|| Ok(Vec::<CatFactEntity>::new()));
 
         // when calling usecase
@@ -69,7 +69,7 @@ mod tests {
     #[actix_rt::test]
     async fn test_should_return_list() {
         // given the "all cat facts" usecase repo returning a list of 2 entities
-        let mut cat_fact_gateway = CatFactsGateway::new();
+        let mut cat_fact_gateway = MockCatFactsGateway::new();
         cat_fact_gateway.expect_get_all_cat_facts().with().times(1).returning(|| {
             Ok(vec![
                 CatFactEntity {

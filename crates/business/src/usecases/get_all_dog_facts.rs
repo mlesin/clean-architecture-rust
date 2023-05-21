@@ -30,13 +30,13 @@ mod tests {
     use super::*;
     use std::io::{Error, ErrorKind};
 
-    use crate::gateways::dog_facts::DogFactsGateway;
+    use crate::gateways::dog_facts::MockDogFactsGateway;
     use entities::dog_fact_entity::DogFactEntity;
 
     #[actix_rt::test]
     async fn test_should_return_error_with_generic_message_when_unexpected_repo_error() {
         // given the "all dog facts" usecase repo with an unexpected random error
-        let mut dog_fact_gateway = DogFactsGateway::new();
+        let mut dog_fact_gateway = MockDogFactsGateway::new();
         dog_fact_gateway
             .expect_get_all_dog_facts()
             .with()
@@ -56,7 +56,7 @@ mod tests {
     #[actix_rt::test]
     async fn test_should_return_empty_list() {
         // given the "all dog facts" usecase repo returning an empty list
-        let mut dog_fact_gateway = DogFactsGateway::new();
+        let mut dog_fact_gateway = MockDogFactsGateway::new();
         dog_fact_gateway.expect_get_all_dog_facts().with().times(1).returning(|| Ok(Vec::<DogFactEntity>::new()));
 
         // when calling usecase
@@ -70,7 +70,7 @@ mod tests {
     #[actix_rt::test]
     async fn test_should_return_list() {
         // given the "all dog facts" usecase repo returning a list of 2 entities
-        let mut dog_fact_gateway = DogFactsGateway::new();
+        let mut dog_fact_gateway = MockDogFactsGateway::new();
         dog_fact_gateway.expect_get_all_dog_facts().with().times(1).returning(|| {
             Ok(vec![
                 DogFactEntity {
