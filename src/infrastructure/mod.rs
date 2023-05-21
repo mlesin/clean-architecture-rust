@@ -10,7 +10,7 @@ pub fn server(listener: TcpListener, db_name: &str) -> Result<Server, std::io::E
     env::set_var("RUST_BACKTRACE", "1");
     env::set_var("RUST_LOG", "actix_web=debug");
 
-    env_logger::try_init().expect("Environment error");
+    let _ = env_logger::try_init(); //.expect("Environment error");
 
     let db_connection = DbConnection { db_name: db_name.to_string() };
     let http_connection = HttpConnection {};

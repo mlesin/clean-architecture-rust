@@ -10,6 +10,6 @@ domain.workspace = true
 application.workspace = true
 # External dependencies
 async-trait.workspace = true
-diesel = { workspace = true, features = ["postgres", "r2d2", "uuidv07"] }
+diesel = { workspace = true, features = ["postgres", "r2d2", "uuid"] }
 dotenv = "~0.15"
 r2d2.workspace = true

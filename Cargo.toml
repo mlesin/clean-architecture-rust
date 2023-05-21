@@ -28,7 +28,7 @@ log.workspace = true
 [dev-dependencies]
 actix-rt.workspace = true
 cargo-tarpaulin.workspace = true
-diesel = { workspace = true, features = ["postgres", "r2d2", "uuidv07"] }
+diesel = { workspace = true, features = ["postgres", "r2d2", "uuid"] }
 diesel_migrations.workspace = true
 mockall.workspace = true
 reqwest = { workspace = true, features = ["json"] }
@@ -62,8 +62,8 @@ failure = "~0.1"
 serde = "~1.0"
 serde_json = "~1.0"
 async-trait = "~0.1"
-diesel = "~1.4"
-diesel_migrations = "~1.4"
+diesel = "~2"
+diesel_migrations = "~2"
 dotenv = "~0.15"
 r2d2 = "~0.8"
 tokio = "~1"
