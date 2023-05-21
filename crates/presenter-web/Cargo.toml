@@ -1,0 +1,15 @@
+[package]
+name = "presenter-web"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+entities.workspace = true
+business.workspace = true
+# External dependencies
+actix-web = { workspace = true, features = ["openssl"] }
+derive_more.workspace = true
+serde.workspace = true
+thiserror.workspace = true

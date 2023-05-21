@@ -1,6 +1,6 @@
-use adapters_spi_db::db_connection::DbConnection;
-use adapters_spi_db::schema::dog_facts::dsl::*;
 use diesel::{insert_into, RunQueryDsl};
+use gateway_pg::connection::DbConnection;
+use gateway_pg::schema::dog_facts::dsl::*;
 
 use crate::{integration_tests::fixtures::fixtures_struct::DogFactJson, utils::utils_file::read_from_file};
 

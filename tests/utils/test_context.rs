@@ -1,7 +1,7 @@
 use crate::integration_tests::fixtures::fixtures_run;
-use adapters_spi_db::db_connection::DbConnection;
 use diesel::RunQueryDsl;
 use fixtures_run::execute_imports;
+use gateway_pg::connection::DbConnection;
 
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, HarnessWithOutput, MigrationHarness};
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");

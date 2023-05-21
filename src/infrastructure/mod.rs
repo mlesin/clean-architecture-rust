@@ -2,9 +2,9 @@ use std::{env, net::TcpListener};
 
 use actix_web::{dev::Server, middleware::Logger};
 use actix_web::{web, App, HttpServer};
-use adapters_api::shared::app_state::AppState;
-use adapters_spi_db::{db_connection::DbConnection, db_dog_facts_repository::DogFactsRepositoryDB};
-use adapters_spi_http::{http_cat_facts_repository::CatFactsRepositoryHTTP, http_connection::HttpConnection};
+use gateway_http::{cat_facts_gateway::CatFactsgatewayHTTP, connection::HttpConnection};
+use gateway_pg::{connection::DbConnection, dog_facts_gateway::DogFactsgatewayDB};
+use presenter_web::shared::app_state::AppState;
 
 pub fn server(listener: TcpListener, db_name: &str) -> Result<Server, std::io::Error> {
     env::set_var("RUST_BACKTRACE", "1");
@@ -17,16 +17,16 @@ pub fn server(listener: TcpListener, db_name: &str) -> Result<Server, std::io::E
 
     let data = web::Data::new(AppState {
         app_name: String::from("Animal Facts API"),
-        cats_repository: Box::new(CatFactsRepositoryHTTP {
+        cats_gateway: Box::new(CatFactsgatewayHTTP {
             http_connection,
             source: dotenv::var("CATS_SOURCE").expect("CATS_SOURCE must be set"),
         }),
-        dogs_repository: Box::new(DogFactsRepositoryDB { db_connection }),
+        dogs_gateway: Box::new(DogFactsgatewayDB { db_connection }),
     });
 
     let port = listener.local_addr().unwrap().port();
 
-    let server = HttpServer::new(move || App::new().app_data(data.clone()).wrap(Logger::default()).configure(adapters_api::shared::routes::routes))
+    let server = HttpServer::new(move || App::new().app_data(data.clone()).wrap(Logger::default()).configure(presenter_web::shared::routes::routes))
         .listen(listener)?
         .run();
 

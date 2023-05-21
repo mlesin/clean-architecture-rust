@@ -1,5 +1,5 @@
-use adapters_spi_db::schema::*;
 use diesel::Insertable;
+use gateway_pg::schema::*;
 use serde::Deserialize;
 
 #[derive(Deserialize, Insertable, Debug)]
