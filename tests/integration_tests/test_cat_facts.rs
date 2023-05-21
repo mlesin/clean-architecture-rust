@@ -1,5 +1,5 @@
 use crate::utils::utils_setup::{setup, spawn_app};
-use presenter_web::cat_facts::cat_facts_presenters::CatFactPresenter;
+use presenter_rest::cat_facts::cat_facts_presenters::CatFactPresenter;
 
 #[actix_rt::test]
 async fn test_should_return_multiple_results() {

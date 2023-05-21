@@ -4,7 +4,7 @@ use actix_web::{dev::Server, middleware::Logger};
 use actix_web::{web, App, HttpServer};
 use gateway_http::{cat_facts_gateway::CatFactsgatewayHTTP, connection::HttpConnection};
 use gateway_pg::{connection::DbConnection, dog_facts_gateway::DogFactsgatewayDB};
-use presenter_web::shared::app_state::AppState;
+use presenter_rest::shared::app_state::AppState;
 
 pub fn server(listener: TcpListener, db_name: &str) -> Result<Server, std::io::Error> {
     env::set_var("RUST_BACKTRACE", "1");
@@ -26,7 +26,7 @@ pub fn server(listener: TcpListener, db_name: &str) -> Result<Server, std::io::E
 
     let port = listener.local_addr().unwrap().port();
 
-    let server = HttpServer::new(move || App::new().app_data(data.clone()).wrap(Logger::default()).configure(presenter_web::shared::routes::routes))
+    let server = HttpServer::new(move || App::new().app_data(data.clone()).wrap(Logger::default()).configure(presenter_rest::shared::routes::routes))
         .listen(listener)?
         .run();
 

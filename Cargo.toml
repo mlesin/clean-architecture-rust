@@ -18,7 +18,7 @@ entities.workspace = true
 business.workspace = true
 gateway-pg.workspace = true
 gateway-http.workspace = true
-presenter-web.workspace = true
+presenter-rest.workspace = true
 # External dependencies
 actix-web = { workspace = true, features = ["openssl"] }
 dotenv.workspace = true
@@ -43,7 +43,8 @@ members = [
     "crates/business",
     "crates/gateway-pg",
     "crates/gateway-http",
-    "crates/presenter-web",
+    "crates/presenter-rest",
+    # "crates/infrastructure"
 ]
 
 [workspace.dependencies]
@@ -51,7 +52,7 @@ entities = { path = "./crates/entities" }
 business = { path = "./crates/business" }
 gateway-pg = { path = "./crates/gateway-pg" }
 gateway-http = { path = "./crates/gateway-http" }
-presenter-web = { path = "./crates/presenter-web" }
+presenter-rest = { path = "./crates/presenter-rest" }
 # External dependencies
 actix-web = "4"
 actix-rt = "~2"
