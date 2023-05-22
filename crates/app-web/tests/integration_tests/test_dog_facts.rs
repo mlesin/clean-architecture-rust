@@ -1,11 +1,13 @@
 use crate::utils::utils_setup::{setup, spawn_app};
 use presenter_rest::dog_facts::dog_facts_presenters::DogFactPresenter;
+use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 
-#[actix_rt::test]
-async fn test_should_return_multiple_results() {
+#[sqlx::test(migrations = "../../migrations")]
+async fn test_should_return_multiple_results(_opts: PgPoolOptions, connopts: PgConnectOptions) {
+    let db_name = connopts.get_database().expect("Can't get test database name");
     // setup
-    let _ctx = setup();
-    let api_address = spawn_app(&_ctx.db_name);
+    let _ctx = setup(db_name).await;
+    let api_address = spawn_app(db_name);
 
     // given the "all dog facts" route
 
@@ -22,11 +24,12 @@ async fn test_should_return_multiple_results() {
     assert_eq!(content_json[0].fact_id, 1);
 }
 
-#[actix_rt::test]
-async fn test_should_return_one_results_only() {
+#[sqlx::test(migrations = "../../migrations")]
+async fn test_should_return_one_results_only(_opts: PgPoolOptions, connopts: PgConnectOptions) {
+    let db_name = connopts.get_database().expect("Can't get test database name");
     // setup
-    let _ctx = setup();
-    let api_address = spawn_app(&_ctx.db_name);
+    let _ctx = setup(db_name).await;
+    let api_address = spawn_app(db_name);
 
     // given the "single dog facts" route
     let dog_fact_id: i8 = 2;

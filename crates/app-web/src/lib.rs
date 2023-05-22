@@ -7,9 +7,6 @@ use gateway_pg::{connection::DbConnection, dog_facts_gateway::DogFactsgatewayDB}
 use presenter_rest::shared::app_state::AppState;
 
 pub fn setup(listener: TcpListener, db_name: &str) -> Result<Server, std::io::Error> {
-    env::set_var("RUST_BACKTRACE", "1");
-    env::set_var("RUST_LOG", "actix_web=debug");
-
     let _ = env_logger::try_init(); //.expect("Environment error");
 
     let db_connection = DbConnection { db_name: db_name.to_string() };
@@ -30,7 +27,7 @@ pub fn setup(listener: TcpListener, db_name: &str) -> Result<Server, std::io::Er
         .listen(listener)?
         .run();
 
-    println!("Server started on {}, db_name {}", port, db_name);
+    println!("Server started on http://{}, db_name {}", port, db_name);
 
     Ok(server)
 }
