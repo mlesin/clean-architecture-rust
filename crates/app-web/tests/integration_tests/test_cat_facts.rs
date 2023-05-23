@@ -6,7 +6,7 @@ use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 async fn test_should_return_multiple_results(_opts: PgPoolOptions, connopts: PgConnectOptions) {
     let db_name = connopts.get_database().expect("Can't get test database name");
     // setup (along with fake api for http spi)
-    let _ctx = setup(db_name).await;
+    setup(db_name.to_string()).await;
     let api_address = spawn_app(db_name);
 
     // given the "all cat facts" route
@@ -31,7 +31,7 @@ async fn test_should_return_multiple_results(_opts: PgPoolOptions, connopts: PgC
 async fn test_should_return_one_results_only(_opts: PgPoolOptions, connopts: PgConnectOptions) {
     let db_name = connopts.get_database().expect("Can't get test database name");
     // setup (along with fake api for http spi)
-    let _ctx = setup(db_name).await;
+    setup(db_name.to_string()).await;
     let api_address = spawn_app(db_name);
 
     // given the "random cat fact" route

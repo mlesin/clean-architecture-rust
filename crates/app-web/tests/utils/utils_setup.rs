@@ -1,8 +1,8 @@
 use actix_web::{web, App, HttpResponse, HttpServer};
-use std::net::TcpStream;
-use std::{env, net::TcpListener};
+use gateway_pg::connection::DbConnection;
+use std::net::{TcpListener, TcpStream};
 
-use super::test_context::TestContextPostgreSQL;
+use crate::integration_tests::fixtures::fixtures_run::execute_imports;
 use crate::utils::utils_file::read_from_file;
 use gateway_http::models::{CatFactApiModel, CatFactsApiModel};
 
@@ -12,7 +12,7 @@ pub fn spawn_app(db_name: &str) -> String {
 
     let port = listener.local_addr().unwrap().port();
 
-    let server = app_web::setup(listener, db_name).expect("Failed to bind address");
+    let server = app_web::setup(listener, db_name.to_string(), "http://127.0.0.1:3333".to_string()).expect("Failed to bind address");
 
     let _ = tokio::spawn(server);
 
@@ -48,10 +48,7 @@ pub fn spawn_http_spi() -> String {
     "http://127.0.0.1:3333".to_string()
 }
 
-pub async fn setup(db_name: &str) -> TestContextPostgreSQL {
-    // first method loaded in integration test, requires ENV env var
-    dotenv::from_filename(format!(".env.{}", env::var("ENV").expect("ENV must be set"))).ok();
-    env::set_var("CATS_SOURCE", "http://127.0.0.1:3333");
-
-    TestContextPostgreSQL::new(&dotenv::var("DATABASE_URL").expect("DATABASE_URL must be set"), db_name).await
+pub async fn setup(db_name: String) {
+    let db_connection_postgres_db = DbConnection { db_name };
+    execute_imports(&db_connection_postgres_db).await;
 }

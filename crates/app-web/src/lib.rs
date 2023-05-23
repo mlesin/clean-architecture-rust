@@ -6,17 +6,17 @@ use gateway_http::{cat_facts_gateway::CatFactsgatewayHTTP, connection::HttpConne
 use gateway_pg::{connection::DbConnection, dog_facts_gateway::DogFactsgatewayDB};
 use presenter_rest::shared::app_state::AppState;
 
-pub fn setup(listener: TcpListener, db_name: &str) -> Result<Server, std::io::Error> {
+pub fn setup(listener: TcpListener, db_name: String, cats_source: String) -> Result<Server, std::io::Error> {
     let _ = env_logger::try_init(); //.expect("Environment error");
 
-    let db_connection = DbConnection { db_name: db_name.to_string() };
+    let db_connection = DbConnection { db_name };
     let http_connection = HttpConnection {};
 
     let data = web::Data::new(AppState {
         app_name: String::from("Animal Facts API"),
         cats_gateway: Box::new(CatFactsgatewayHTTP {
             http_connection,
-            source: dotenv::var("CATS_SOURCE").expect("CATS_SOURCE must be set"),
+            source: cats_source,
         }),
         dogs_gateway: Box::new(DogFactsgatewayDB { db_connection }),
     });
@@ -27,7 +27,7 @@ pub fn setup(listener: TcpListener, db_name: &str) -> Result<Server, std::io::Er
         .listen(listener)?
         .run();
 
-    println!("Server started on http://{}, db_name {}", port, db_name);
+    println!("Server started on http://{}", port);
 
     Ok(server)
 }
@@ -43,6 +43,7 @@ pub fn run(listener: TcpListener) -> Result<(), std::io::Error> {
     dotenv::from_filename(environment_file).ok();
 
     let db_name = dotenv::var("DATABASE_NAME").expect("DATABASE_NAME must be set");
+    let cats_source = dotenv::var("CATS_SOURCE").expect("CATS_SOURCE must be set");
 
-    rt::System::new().block_on(setup(listener, &db_name)?)
+    rt::System::new().block_on(setup(listener, db_name, cats_source)?)
 }

@@ -51,11 +51,11 @@ cargo outdated
 
 Here's what done in order to mock the SPI
 
-- db: every test is creating a new database from `TestContextPostgreSQL` with json fixtures in `test/fixtures` & spawns the app with this database
+- db: every test is creating a new database with json fixtures in `test/fixtures` & spawns the app with this database
 - http: every test also spins up another rust api (if not already up) with the expected routes but test data in `test/fixtures`
 
 ```bash
-ENV=test cargo test --workspace
+cargo test --workspace
 ```
 
 ## API Documentation
