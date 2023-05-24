@@ -6,6 +6,9 @@ pub struct CatFactEntity {
 
 impl CatFactEntity {
     pub fn new(fact_txt: String, fact_length: i32) -> Self {
-        CatFactEntity { fact_txt, fact_length }
+        CatFactEntity {
+            fact_txt,
+            fact_length,
+        }
     }
 }

@@ -12,7 +12,12 @@ pub fn spawn_app(db_name: &str) -> String {
 
     let port = listener.local_addr().unwrap().port();
 
-    let server = app_web::setup(listener, db_name.to_string(), "http://127.0.0.1:3333".to_string()).expect("Failed to bind address");
+    let server = app_web::setup(
+        listener,
+        db_name.to_string(),
+        "http://127.0.0.1:3333".to_string(),
+    )
+    .expect("Failed to bind address");
 
     let _ = tokio::spawn(server);
 
@@ -27,7 +32,9 @@ pub fn spawn_app(db_name: &str) -> String {
 
 pub fn spawn_http_spi() -> String {
     async fn facts_route() -> HttpResponse {
-        let json = read_from_file::<CatFactsApiModel>("tests/integration_tests/fixtures/cat_facts.json").unwrap();
+        let json =
+            read_from_file::<CatFactsApiModel>("tests/integration_tests/fixtures/cat_facts.json")
+                .unwrap();
         HttpResponse::Ok().json(json)
     }
 
@@ -38,10 +45,14 @@ pub fn spawn_http_spi() -> String {
         })
     }
 
-    let s1 = HttpServer::new(move || App::new().route("facts", web::get().to(facts_route)).route("fact", web::get().to(random_fact_route)))
-        .bind("127.0.0.1:3333")
-        .expect("woops")
-        .run();
+    let s1 = HttpServer::new(move || {
+        App::new()
+            .route("facts", web::get().to(facts_route))
+            .route("fact", web::get().to(random_fact_route))
+    })
+    .bind("127.0.0.1:3333")
+    .expect("woops")
+    .run();
 
     let _ = tokio::spawn(s1);
 

@@ -4,7 +4,9 @@ use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn test_should_return_multiple_results(_opts: PgPoolOptions, connopts: PgConnectOptions) {
-    let db_name = connopts.get_database().expect("Can't get test database name");
+    let db_name = connopts
+        .get_database()
+        .expect("Can't get test database name");
     // setup (along with fake api for http spi)
     setup(db_name.to_string()).await;
     let api_address = spawn_app(db_name);
@@ -12,7 +14,9 @@ async fn test_should_return_multiple_results(_opts: PgPoolOptions, connopts: PgC
     // given the "all cat facts" route
 
     // when getting
-    let response = reqwest::get(&format!("{}/api/v1/cats/", &api_address)).await.expect("Failed to execute request.");
+    let response = reqwest::get(&format!("{}/api/v1/cats/", &api_address))
+        .await
+        .expect("Failed to execute request.");
 
     // then expect entire list
     assert!(response.status().is_success());
@@ -29,14 +33,18 @@ async fn test_should_return_multiple_results(_opts: PgPoolOptions, connopts: PgC
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn test_should_return_one_results_only(_opts: PgPoolOptions, connopts: PgConnectOptions) {
-    let db_name = connopts.get_database().expect("Can't get test database name");
+    let db_name = connopts
+        .get_database()
+        .expect("Can't get test database name");
     // setup (along with fake api for http spi)
     setup(db_name.to_string()).await;
     let api_address = spawn_app(db_name);
 
     // given the "random cat fact" route
     // when getting
-    let response = reqwest::get(&format!("{}/api/v1/cats/random", &api_address)).await.expect("Failed to execute request.");
+    let response = reqwest::get(&format!("{}/api/v1/cats/random", &api_address))
+        .await
+        .expect("Failed to execute request.");
 
     // then expect 1 only
     assert!(response.status().is_success());

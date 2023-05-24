@@ -6,7 +6,11 @@ use gateway_http::{cat_facts_gateway::CatFactsgatewayHTTP, connection::HttpConne
 use gateway_pg::{connection::DbConnection, dog_facts_gateway::DogFactsgatewayDB};
 use presenter_rest::shared::app_state::AppState;
 
-pub fn setup(listener: TcpListener, db_name: String, cats_source: String) -> Result<Server, std::io::Error> {
+pub fn setup(
+    listener: TcpListener,
+    db_name: String,
+    cats_source: String,
+) -> Result<Server, std::io::Error> {
     let _ = env_logger::try_init(); //.expect("Environment error");
 
     let db_connection = DbConnection { db_name };
@@ -23,9 +27,14 @@ pub fn setup(listener: TcpListener, db_name: String, cats_source: String) -> Res
 
     let port = listener.local_addr().unwrap().to_string();
 
-    let server = HttpServer::new(move || App::new().app_data(data.clone()).wrap(Logger::default()).configure(presenter_rest::shared::routes::routes))
-        .listen(listener)?
-        .run();
+    let server = HttpServer::new(move || {
+        App::new()
+            .app_data(data.clone())
+            .wrap(Logger::default())
+            .configure(presenter_rest::shared::routes::routes)
+    })
+    .listen(listener)?
+    .run();
 
     println!("Server started on http://{}", port);
 

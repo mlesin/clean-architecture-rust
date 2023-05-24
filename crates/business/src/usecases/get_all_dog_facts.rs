@@ -1,6 +1,9 @@
 use async_trait::async_trait;
 
-use crate::{gateways::dog_facts::DogFactsGateway, usecases::interfaces::UseCase, utils::error_handling_utils::ErrorHandlingUtils};
+use crate::{
+    gateways::dog_facts::DogFactsGateway, usecases::interfaces::UseCase,
+    utils::error_handling_utils::ErrorHandlingUtils,
+};
 use entities::{dog_fact_entity::DogFactEntity, error::ApiError};
 
 pub struct GetAllDogFactsUseCase<'a> {
@@ -20,7 +23,10 @@ impl<'a> UseCase<Vec<DogFactEntity>> for GetAllDogFactsUseCase<'a> {
 
         match dog_facts {
             Ok(facts) => Ok(facts),
-            Err(e) => Err(ErrorHandlingUtils::business_error("Cannot get all dog facts", Some(e))),
+            Err(e) => Err(ErrorHandlingUtils::business_error(
+                "Cannot get all dog facts",
+                Some(e),
+            )),
         }
     }
 }
@@ -57,7 +63,11 @@ mod tests {
     async fn test_should_return_empty_list() {
         // given the "all dog facts" usecase repo returning an empty list
         let mut dog_fact_gateway = MockDogFactsGateway::new();
-        dog_fact_gateway.expect_get_all_dog_facts().with().times(1).returning(|| Ok(Vec::<DogFactEntity>::new()));
+        dog_fact_gateway
+            .expect_get_all_dog_facts()
+            .with()
+            .times(1)
+            .returning(|| Ok(Vec::<DogFactEntity>::new()));
 
         // when calling usecase
         let get_all_dog_facts_usecase = GetAllDogFactsUseCase::new(&dog_fact_gateway);
@@ -71,18 +81,22 @@ mod tests {
     async fn test_should_return_list() {
         // given the "all dog facts" usecase repo returning a list of 2 entities
         let mut dog_fact_gateway = MockDogFactsGateway::new();
-        dog_fact_gateway.expect_get_all_dog_facts().with().times(1).returning(|| {
-            Ok(vec![
-                DogFactEntity {
-                    fact_id: 1,
-                    fact: String::from("fact1"),
-                },
-                DogFactEntity {
-                    fact_id: 2,
-                    fact: String::from("fact2"),
-                },
-            ])
-        });
+        dog_fact_gateway
+            .expect_get_all_dog_facts()
+            .with()
+            .times(1)
+            .returning(|| {
+                Ok(vec![
+                    DogFactEntity {
+                        fact_id: 1,
+                        fact: String::from("fact1"),
+                    },
+                    DogFactEntity {
+                        fact_id: 2,
+                        fact: String::from("fact2"),
+                    },
+                ])
+            });
 
         // when calling usecase
         let get_all_dog_facts_usecase = GetAllDogFactsUseCase::new(&dog_fact_gateway);

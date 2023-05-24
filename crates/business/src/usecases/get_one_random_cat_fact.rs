@@ -1,6 +1,9 @@
 use async_trait::async_trait;
 
-use crate::{gateways::cat_facts::CatFactsGateway, usecases::interfaces::UseCase, utils::error_handling_utils::ErrorHandlingUtils};
+use crate::{
+    gateways::cat_facts::CatFactsGateway, usecases::interfaces::UseCase,
+    utils::error_handling_utils::ErrorHandlingUtils,
+};
 use entities::{cat_fact_entity::CatFactEntity, error::ApiError};
 
 pub struct GetOneRandomCatFactUseCase<'a> {
@@ -20,7 +23,10 @@ impl<'a> UseCase<CatFactEntity> for GetOneRandomCatFactUseCase<'a> {
 
         match cat_fact {
             Ok(fact) => Ok(fact),
-            Err(e) => Err(ErrorHandlingUtils::business_error("Cannot get random cat fact", Some(e))),
+            Err(e) => Err(ErrorHandlingUtils::business_error(
+                "Cannot get random cat fact",
+                Some(e),
+            )),
         }
     }
 }
@@ -30,7 +36,10 @@ mod tests {
     use super::*;
     use std::io::{Error, ErrorKind};
 
-    use crate::{gateways::cat_facts::MockCatFactsGateway, usecases::get_one_random_cat_fact::GetOneRandomCatFactUseCase};
+    use crate::{
+        gateways::cat_facts::MockCatFactsGateway,
+        usecases::get_one_random_cat_fact::GetOneRandomCatFactUseCase,
+    };
 
     #[actix_rt::test]
     async fn test_should_return_generic_message_when_unexpected_repo_error() {
@@ -56,12 +65,16 @@ mod tests {
     async fn test_should_return_one_result() {
         // given the "one random cat fact" usecase repo returning one result
         let mut cat_fact_gateway = MockCatFactsGateway::new();
-        cat_fact_gateway.expect_get_random_cat_fact().with().times(1).returning(|| {
-            Ok(CatFactEntity {
-                fact_txt: String::from("fact1"),
-                fact_length: 1,
-            })
-        });
+        cat_fact_gateway
+            .expect_get_random_cat_fact()
+            .with()
+            .times(1)
+            .returning(|| {
+                Ok(CatFactEntity {
+                    fact_txt: String::from("fact1"),
+                    fact_length: 1,
+                })
+            });
 
         // when calling usecase
         let get_one_random_cat_fact_usecase = GetOneRandomCatFactUseCase::new(&cat_fact_gateway);

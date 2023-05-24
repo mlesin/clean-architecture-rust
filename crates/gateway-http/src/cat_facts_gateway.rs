@@ -17,7 +17,12 @@ pub struct CatFactsgatewayHTTP {
 #[async_trait(?Send)]
 impl CatFactsGateway for CatFactsgatewayHTTP {
     async fn get_random_cat_fact(&self) -> Result<CatFactEntity, Box<dyn Error>> {
-        let response = self.http_connection.client().get(&format!("{}/fact", &self.source)).send().await;
+        let response = self
+            .http_connection
+            .client()
+            .get(&format!("{}/fact", &self.source))
+            .send()
+            .await;
 
         match response {
             Ok(r) => {
@@ -33,14 +38,23 @@ impl CatFactsGateway for CatFactsgatewayHTTP {
     }
 
     async fn get_all_cat_facts(&self) -> Result<Vec<CatFactEntity>, Box<dyn Error>> {
-        let response = self.http_connection.client().get(&format!("{}/facts", &self.source)).send().await;
+        let response = self
+            .http_connection
+            .client()
+            .get(&format!("{}/facts", &self.source))
+            .send()
+            .await;
 
         match response {
             Ok(r) => {
                 let json = r.json::<CatFactsApiModel>().await;
 
                 match json {
-                    Ok(j) => Ok(j.data.into_iter().map(CatFactHttpMapper::to_entity).collect::<Vec<CatFactEntity>>()),
+                    Ok(j) => Ok(j
+                        .data
+                        .into_iter()
+                        .map(CatFactHttpMapper::to_entity)
+                        .collect::<Vec<CatFactEntity>>()),
                     Err(e) => Err(Box::new(e)),
                 }
             }

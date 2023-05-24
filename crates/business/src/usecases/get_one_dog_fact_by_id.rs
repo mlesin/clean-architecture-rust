@@ -1,6 +1,9 @@
 use async_trait::async_trait;
 
-use crate::{gateways::dog_facts::DogFactsGateway, usecases::interfaces::UseCase, utils::error_handling_utils::ErrorHandlingUtils};
+use crate::{
+    gateways::dog_facts::DogFactsGateway, usecases::interfaces::UseCase,
+    utils::error_handling_utils::ErrorHandlingUtils,
+};
 use entities::{dog_fact_entity::DogFactEntity, error::ApiError};
 
 pub struct GetOneDogFactByIdUseCase<'a> {
@@ -10,7 +13,10 @@ pub struct GetOneDogFactByIdUseCase<'a> {
 
 impl<'a> GetOneDogFactByIdUseCase<'a> {
     pub fn new(dog_fact_id: &'a i32, gateway: &'a dyn DogFactsGateway) -> Self {
-        GetOneDogFactByIdUseCase { dog_fact_id, gateway }
+        GetOneDogFactByIdUseCase {
+            dog_fact_id,
+            gateway,
+        }
     }
 }
 
@@ -21,7 +27,10 @@ impl<'a> UseCase<DogFactEntity> for GetOneDogFactByIdUseCase<'a> {
 
         match dog_fact {
             Ok(dog_fact) => Ok(dog_fact),
-            Err(e) => Err(ErrorHandlingUtils::business_error("Cannot get single dog fact", Some(e))),
+            Err(e) => Err(ErrorHandlingUtils::business_error(
+                "Cannot get single dog fact",
+                Some(e),
+            )),
         }
     }
 }
@@ -59,12 +68,16 @@ mod tests {
     async fn test_should_return_one_result() {
         // given the "one dog fact by id" usecase repo returning one result
         let mut dog_fact_gateway = MockDogFactsGateway::new();
-        dog_fact_gateway.expect_get_dog_fact_by_id().with(eq(1)).times(1).returning(|_| {
-            Ok(DogFactEntity {
-                fact_id: 1,
-                fact: String::from("fact1"),
-            })
-        });
+        dog_fact_gateway
+            .expect_get_dog_fact_by_id()
+            .with(eq(1))
+            .times(1)
+            .returning(|_| {
+                Ok(DogFactEntity {
+                    fact_id: 1,
+                    fact: String::from("fact1"),
+                })
+            });
 
         // when calling usecase
         let get_one_dog_fact_by_id_usecase = GetOneDogFactByIdUseCase::new(&1, &dog_fact_gateway);
