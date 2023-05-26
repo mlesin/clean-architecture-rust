@@ -3,7 +3,7 @@ use std::{env, net::TcpListener};
 use actix_web::{dev::Server, middleware::Logger};
 use actix_web::{rt, web, App, HttpServer};
 use gateway_http::{cat_facts_gateway::CatFactsgatewayHTTP, connection::HttpConnection};
-use gateway_pg::{connection::DbConnection, dog_facts_gateway::DogFactsgatewayDB};
+use gateway_pg::dog_facts_gateway::{DogFactsGatewayPG, DogFactsGatewayRepoPG};
 use presenter_rest::shared::app_state::AppState;
 
 pub fn setup(
@@ -13,7 +13,7 @@ pub fn setup(
 ) -> Result<Server, std::io::Error> {
     let _ = env_logger::try_init(); //.expect("Environment error");
 
-    let db_connection = DbConnection { db_name };
+    let db_pool = DogFactsGatewayPG::get_pool(&db_name);
     let http_connection = HttpConnection {};
 
     let data = web::Data::new(AppState {
@@ -22,7 +22,7 @@ pub fn setup(
             http_connection,
             source: cats_source,
         }),
-        dogs_gateway: Box::new(DogFactsgatewayDB { db_connection }),
+        dogs_gateway: Box::new(db_pool),
     });
 
     let port = listener.local_addr().unwrap().to_string();

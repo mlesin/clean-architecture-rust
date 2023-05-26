@@ -20,3 +20,4 @@ sqlx = { workspace = true, features = [
     "chrono",
 ] }
 num_cpus.workspace = true
+tokio.workspace = true

@@ -35,7 +35,8 @@
         "esbenp.prettier-vscode",
         "bmalehorn.shell-syntax",
         "ms-azuretools.vscode-docker",
-        "foxundermoon.shell-format"
+        "foxundermoon.shell-format",
+        "jebbs.plantuml"
       ]
     }
   },

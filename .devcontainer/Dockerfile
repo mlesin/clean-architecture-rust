@@ -11,11 +11,12 @@ RUN apt-get update \
     && apt-get install --no-install-recommends -y \
     ca-certificates curl file \
     build-essential \
-    autoconf automake autotools-dev libtool xutils-dev \
+    autoconf automake autotools-dev libtool \
     pkg-config \
-    libssl-dev \
-    libpq-dev \
+    libssl-dev libpq-dev \
     bash-completion \
+    # For plantUML extension to work
+    default-jre-headless graphviz \
     && rm -rf /var/lib/apt/lists/*
 
 # Create default user for container
