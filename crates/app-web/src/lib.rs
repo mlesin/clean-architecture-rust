@@ -1,19 +1,18 @@
 use std::{env, net::TcpListener};
 
-use actix_web::{dev::Server, middleware::Logger};
+use actix_web::middleware::Logger;
 use actix_web::{rt, web, App, HttpServer};
 use gateway_http::{cat_facts_gateway::CatFactsgatewayHTTP, connection::HttpConnection};
-use gateway_pg::dog_facts_gateway::{DogFactsGatewayPG, DogFactsGatewayRepoPG};
+use gateway_pg::dog_facts_gateway::DogFactsGatewayPG;
 use presenter_rest::shared::app_state::AppState;
 
-pub fn setup(
+pub async fn setup(
     listener: TcpListener,
     db_name: String,
     cats_source: String,
-) -> Result<Server, std::io::Error> {
+) -> Result<(), std::io::Error> {
     let _ = env_logger::try_init(); //.expect("Environment error");
 
-    let db_pool = DogFactsGatewayPG::get_pool(&db_name);
     let http_connection = HttpConnection {};
 
     let data = web::Data::new(AppState {
@@ -22,7 +21,7 @@ pub fn setup(
             http_connection,
             source: cats_source,
         }),
-        dogs_gateway: Box::new(db_pool),
+        dogs_gateway: Box::new(DogFactsGatewayPG::new(&db_name).await.unwrap()), //FIXME
     });
 
     let port = listener.local_addr().unwrap().to_string();
@@ -38,7 +37,7 @@ pub fn setup(
 
     println!("Server started on http://{}", port);
 
-    Ok(server)
+    server.await
 }
 
 pub fn run(listener: TcpListener) -> Result<(), std::io::Error> {
@@ -54,5 +53,5 @@ pub fn run(listener: TcpListener) -> Result<(), std::io::Error> {
     let db_name = dotenv::var("DATABASE_NAME").expect("DATABASE_NAME must be set");
     let cats_source = dotenv::var("CATS_SOURCE").expect("CATS_SOURCE must be set");
 
-    rt::System::new().block_on(setup(listener, db_name, cats_source)?)
+    rt::System::new().block_on(setup(listener, db_name, cats_source))
 }

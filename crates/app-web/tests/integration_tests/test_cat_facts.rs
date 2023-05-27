@@ -4,12 +4,9 @@ use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn test_should_return_multiple_results(_opts: PgPoolOptions, connopts: PgConnectOptions) {
-    let db_name = connopts
-        .get_database()
-        .expect("Can't get test database name");
-    // setup (along with fake api for http spi)
-    setup(db_name.to_string()).await;
-    let api_address = spawn_app(db_name);
+    // setup
+    setup(&connopts).await;
+    let api_address = spawn_app(&connopts).await;
 
     // given the "all cat facts" route
 
@@ -33,12 +30,9 @@ async fn test_should_return_multiple_results(_opts: PgPoolOptions, connopts: PgC
 
 #[sqlx::test(migrations = "../../migrations")]
 async fn test_should_return_one_results_only(_opts: PgPoolOptions, connopts: PgConnectOptions) {
-    let db_name = connopts
-        .get_database()
-        .expect("Can't get test database name");
-    // setup (along with fake api for http spi)
-    setup(db_name.to_string()).await;
-    let api_address = spawn_app(db_name);
+    // setup
+    setup(&connopts).await;
+    let api_address = spawn_app(&connopts).await;
 
     // given the "random cat fact" route
     // when getting

@@ -1,25 +1,30 @@
 use actix_web::{web, App, HttpResponse, HttpServer};
-use gateway_pg::connection::DbConnection;
+use sqlx::{postgres::PgConnectOptions, ConnectOptions};
 use std::net::{TcpListener, TcpStream};
 
 use crate::integration_tests::fixtures::fixtures_run::execute_imports;
 use crate::utils::utils_file::read_from_file;
 use gateway_http::models::{CatFactApiModel, CatFactsApiModel};
 
-pub fn spawn_app(db_name: &str) -> String {
+pub async fn spawn_app(connopts: &PgConnectOptions) -> String {
     // Let the OS assign a port (:0)
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
 
     let port = listener.local_addr().unwrap().port();
+
+    let db_name = connopts
+        .get_database()
+        .expect("Can't get test database name");
 
     let server = app_web::setup(
         listener,
         db_name.to_string(),
         "http://127.0.0.1:3333".to_string(),
     )
+    .await
     .expect("Failed to bind address");
 
-    let _ = tokio::spawn(server);
+    // let _ = tokio::spawn(server);
 
     if TcpStream::connect("127.0.0.1:3333").is_ok() {
         println!("Http source faked server already running");
@@ -59,7 +64,7 @@ pub fn spawn_http_spi() -> String {
     "http://127.0.0.1:3333".to_string()
 }
 
-pub async fn setup(db_name: String) {
-    let db_connection_postgres_db = DbConnection { db_name };
-    execute_imports(&db_connection_postgres_db).await;
+pub async fn setup(connopts: &PgConnectOptions) {
+    let mut db_connection_postgres_db = connopts.connect().await.unwrap();
+    execute_imports(&mut db_connection_postgres_db).await;
 }

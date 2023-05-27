@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use async_trait::async_trait;
 
 use crate::{
@@ -21,27 +19,13 @@ impl<'a> GetAllDogFactsUseCase<'a> {
 #[async_trait(?Send)]
 impl<'a> UseCase<Vec<DogFactEntity>> for GetAllDogFactsUseCase<'a> {
     async fn execute(&self) -> Result<Vec<DogFactEntity>, ApiError> {
-        // let df = vec![];
-        // let result = self
-        //     .gateway
-        //     .access_repo(&|repo| {
-        //         Box::pin(async move {
-        //             let dog_facts = repo.get_all_dog_facts().await?;
-        //             df.clone().extend(dog_facts.into_iter());
-        //             Ok(())
-        //         })
-        //     })
-        //     .await;
-
         let dog_facts = {
-            let mut repo = self.gateway.get_repo().await.unwrap();
+            let mut repo = self.gateway.get_repo().await.unwrap(); //FIXME
             let facts = repo.get_all_dog_facts().await;
             // transaction is dropped if repo gets out of scope without commit
-            repo.commit().await;
+            repo.commit().await.unwrap(); //FIXME
             facts
         };
-
-        // let dog_facts = self.gateway.get_all_dog_facts().await;
 
         match dog_facts {
             Ok(facts) => Ok(facts),
@@ -53,78 +37,114 @@ impl<'a> UseCase<Vec<DogFactEntity>> for GetAllDogFactsUseCase<'a> {
     }
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use std::io::{Error, ErrorKind};
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::{Error, ErrorKind};
 
-//     use crate::gateways::dog_facts::MockDogFactsGatewayRepo;
-//     use entities::dog_fact_entity::DogFactEntity;
+    use crate::gateways::dog_facts::{MockDogFactsGateway, MockDogFactsGatewayRepo};
+    use entities::dog_fact_entity::DogFactEntity;
 
-//     #[actix_rt::test]
-//     async fn test_should_return_error_with_generic_message_when_unexpected_repo_error() {
-//         // given the "all dog facts" usecase repo with an unexpected random error
-//         let mut dog_fact_gateway = MockDogFactsGatewayRepo::new();
-//         dog_fact_gateway
-//             .expect_get_all_dog_facts()
-//             .with()
-//             .times(1)
-//             .returning(|| Err(Box::new(Error::new(ErrorKind::Other, "oh no!"))));
+    #[actix_rt::test]
+    async fn test_should_return_error_with_generic_message_when_unexpected_repo_error() {
+        // given the "all dog facts" usecase repo with an unexpected random error
+        let mut dog_fact_gateway = MockDogFactsGateway::new();
+        dog_fact_gateway
+            .expect_get_repo()
+            .with()
+            .times(1)
+            .returning(|| {
+                let mut dog_fact_gateway_repo = MockDogFactsGatewayRepo::new();
+                dog_fact_gateway_repo
+                    .expect_get_all_dog_facts()
+                    .with()
+                    .times(1)
+                    .returning(|| Err(Box::new(Error::new(ErrorKind::Other, "oh no!"))));
+                dog_fact_gateway_repo
+                    .expect_commit()
+                    .times(1)
+                    .returning(|| Ok(()));
+                Ok(Box::new(dog_fact_gateway_repo))
+            });
 
-//         // when calling usecase
-//         let get_all_dog_facts_usecase = GetAllDogFactsUseCase::new(&dog_fact_gateway);
-//         let data = get_all_dog_facts_usecase.execute().await;
+        // when calling usecase
+        let get_all_dog_facts_usecase = GetAllDogFactsUseCase::new(&dog_fact_gateway);
+        let data = get_all_dog_facts_usecase.execute().await;
 
-//         // then exception
-//         assert!(data.is_err());
-//         let result = data.unwrap_err();
-//         assert_eq!("Cannot get all dog facts", result.message);
-//     }
+        // then exception
+        assert!(data.is_err());
+        let result = data.unwrap_err();
+        assert_eq!("Cannot get all dog facts", result.message);
+    }
 
-//     #[actix_rt::test]
-//     async fn test_should_return_empty_list() {
-//         // given the "all dog facts" usecase repo returning an empty list
-//         let mut dog_fact_gateway = MockDogFactsGatewayRepo::new();
-//         dog_fact_gateway
-//             .expect_get_all_dog_facts()
-//             .with()
-//             .times(1)
-//             .returning(|| Ok(Vec::<DogFactEntity>::new()));
+    #[actix_rt::test]
+    async fn test_should_return_empty_list() {
+        // given the "all dog facts" usecase repo returning an empty list
+        let mut dog_fact_gateway = MockDogFactsGateway::new();
+        dog_fact_gateway
+            .expect_get_repo()
+            .with()
+            .times(1)
+            .returning(|| {
+                let mut dog_fact_gateway_repo = MockDogFactsGatewayRepo::new();
+                dog_fact_gateway_repo
+                    .expect_get_all_dog_facts()
+                    .with()
+                    .times(1)
+                    .returning(|| Ok(Vec::<DogFactEntity>::new()));
+                dog_fact_gateway_repo
+                    .expect_commit()
+                    .times(1)
+                    .returning(|| Ok(()));
+                Ok(Box::new(dog_fact_gateway_repo))
+            });
 
-//         // when calling usecase
-//         let get_all_dog_facts_usecase = GetAllDogFactsUseCase::new(&dog_fact_gateway);
-//         let data = get_all_dog_facts_usecase.execute().await.unwrap();
+        // when calling usecase
+        let get_all_dog_facts_usecase = GetAllDogFactsUseCase::new(&dog_fact_gateway);
+        let data = get_all_dog_facts_usecase.execute().await.unwrap();
 
-//         // then assert the result is an empty list
-//         assert_eq!(data.len(), 0);
-//     }
+        // then assert the result is an empty list
+        assert_eq!(data.len(), 0);
+    }
 
-//     #[actix_rt::test]
-//     async fn test_should_return_list() {
-//         // given the "all dog facts" usecase repo returning a list of 2 entities
-//         let mut dog_fact_gateway = MockDogFactsGatewayRepo::new();
-//         dog_fact_gateway
-//             .expect_get_all_dog_facts()
-//             .with()
-//             .times(1)
-//             .returning(|| {
-//                 Ok(vec![
-//                     DogFactEntity {
-//                         fact_id: 1,
-//                         fact: String::from("fact1"),
-//                     },
-//                     DogFactEntity {
-//                         fact_id: 2,
-//                         fact: String::from("fact2"),
-//                     },
-//                 ])
-//             });
+    #[actix_rt::test]
+    async fn test_should_return_list() {
+        // given the "all dog facts" usecase repo returning a list of 2 entities
+        let mut dog_fact_gateway = MockDogFactsGateway::new();
+        dog_fact_gateway
+            .expect_get_repo()
+            .with()
+            .times(1)
+            .returning(|| {
+                let mut dog_fact_gateway_repo = MockDogFactsGatewayRepo::new();
+                dog_fact_gateway_repo
+                    .expect_get_all_dog_facts()
+                    .with()
+                    .times(1)
+                    .returning(|| {
+                        Ok(vec![
+                            DogFactEntity {
+                                fact_id: 1,
+                                fact: String::from("fact1"),
+                            },
+                            DogFactEntity {
+                                fact_id: 2,
+                                fact: String::from("fact2"),
+                            },
+                        ])
+                    });
+                dog_fact_gateway_repo
+                    .expect_commit()
+                    .times(1)
+                    .returning(|| Ok(()));
+                Ok(Box::new(dog_fact_gateway_repo))
+            });
 
-//         // when calling usecase
-//         let get_all_dog_facts_usecase = GetAllDogFactsUseCase::new(&dog_fact_gateway);
-//         let data = get_all_dog_facts_usecase.execute().await.unwrap();
+        // when calling usecase
+        let get_all_dog_facts_usecase = GetAllDogFactsUseCase::new(&dog_fact_gateway);
+        let data = get_all_dog_facts_usecase.execute().await.unwrap();
 
-//         // then assert the result is an empty list
-//         assert_eq!(data.len(), 2);
-//     }
-// }
+        // then assert the result is an empty list
+        assert_eq!(data.len(), 2);
+    }
+}

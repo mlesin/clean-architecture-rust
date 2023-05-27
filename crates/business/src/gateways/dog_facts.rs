@@ -9,13 +9,9 @@ use mockall::{predicate::*, *};
 pub type AsyncFn<'a, Arg, Res, Err> =
     dyn Fn(Arg) -> Pin<Box<dyn Future<Output = Result<Res, Err>> + Send + 'a>> + Sync + 'a;
 
+#[cfg_attr(test, automock)]
 #[async_trait()]
 pub trait DogFactsGateway {
-    // async fn access_repo<'a>(
-    //     &self,
-    //     f: &AsyncFn<'a, Box<dyn DogFactsGatewayRepo + Send + Sync>, (), Box<dyn Error>>,
-    // ) -> Result<(), Box<dyn Error>>;
-
     async fn get_repo(&self) -> Result<Box<dyn DogFactsGatewayRepo + Send + Sync>, Box<dyn Error>>;
 }
 

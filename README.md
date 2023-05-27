@@ -21,11 +21,11 @@ I suggest
 - PostgreSQL [in docker](https://hub.docker.com/_/postgres/)
 - pgAdmin [install](https://www.pgadmin.org/download/pgadmin-4-apt/)
 
-Then install [diesel_cli](https://lib.rs/crates/diesel_cli)
+Then install [sqlx-cli](https://lib.rs/crates/sqlx-cli)
 
 ```bash
-diesel setup --database-url postgresql://postgres:postgres@db/animal_fact_db
-diesel migration run --database-url postgresql://postgres:postgres@db/animal_fact_db
+sqlx database reset
+sql migrate run
 ```
 
 ## Running
