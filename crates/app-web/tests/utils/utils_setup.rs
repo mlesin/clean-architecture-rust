@@ -20,17 +20,15 @@ pub async fn spawn_app(connopts: &PgConnectOptions) -> String {
         listener,
         db_name.to_string(),
         "http://127.0.0.1:3333".to_string(),
-    )
-    .await
-    .expect("Failed to bind address");
-
-    // let _ = tokio::spawn(server);
+    );
 
     if TcpStream::connect("127.0.0.1:3333").is_ok() {
         println!("Http source faked server already running");
     } else {
         spawn_http_spi();
     }
+
+    let _ = tokio::spawn(server);
 
     format!("http://127.0.0.1:{}", port)
 }
