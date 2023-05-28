@@ -1,7 +1,7 @@
 use crate::cat_facts::cat_facts_payloads::CatFactPayload;
 use crate::cat_facts::cat_facts_presenters::CatFactPresenter;
-use business::mappers::presenter::ApiMapper;
-use entities::cat_fact_entity::CatFactEntity;
+use app_core::mappers::presenter::ApiMapper;
+use app_domain::cat_fact_entity::CatFactEntity;
 
 pub struct CatFactPresenterMapper {}
 

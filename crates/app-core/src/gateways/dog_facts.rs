@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use entities::dog_fact_entity::DogFactEntity;
+use app_domain::dog_fact_entity::DogFactEntity;
 use std::{error::Error, future::Future, pin::Pin};
 
 #[cfg(test)]

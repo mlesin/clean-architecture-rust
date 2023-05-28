@@ -1,6 +1,6 @@
 use crate::models::CatFactApiModel;
-use business::mappers::gateway::GatewayMapper;
-use entities::cat_fact_entity::CatFactEntity;
+use app_core::mappers::gateway::GatewayMapper;
+use app_domain::cat_fact_entity::CatFactEntity;
 
 pub struct CatFactHttpMapper {}
 

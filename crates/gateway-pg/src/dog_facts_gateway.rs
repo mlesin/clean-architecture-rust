@@ -6,11 +6,11 @@ use std::{error::Error, sync::Arc};
 use tokio::sync::Mutex;
 
 use crate::{mappers::DogFactDbMapper, models::DogFact};
-use business::{
+use app_core::{
     gateways::dog_facts::{DogFactsGateway, DogFactsGatewayRepo},
     mappers::gateway::GatewayMapper,
 };
-use entities::dog_fact_entity::DogFactEntity;
+use app_domain::dog_fact_entity::DogFactEntity;
 
 struct DogFactsGatewayRepoPG<'a> {
     transaction: Arc<Mutex<Option<Transaction<'a, Postgres>>>>,

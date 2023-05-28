@@ -10,30 +10,30 @@ name = "animal_facts_api"
 path = "src/main.rs"
 
 [dependencies]
-entities.workspace = true
-business.workspace = true
+app-domain.workspace = true
+app-core.workspace = true
 gateway-pg.workspace = true
 gateway-http.workspace = true
 presenter-rest.workspace = true
-app-web.workspace = true
+main-web.workspace = true
 
 [workspace]
 members = [
-    "crates/entities",
-    "crates/business",
+    "crates/app-domain",
+    "crates/app-core",
     "crates/gateway-pg",
     "crates/gateway-http",
     "crates/presenter-rest",
-    "crates/app-web",
+    "crates/main-web",
 ]
 
 [workspace.dependencies]
-entities = { path = "./crates/entities" }
-business = { path = "./crates/business" }
+app-domain = { path = "./crates/app-domain" }
+app-core = { path = "./crates/app-core" }
 gateway-pg = { path = "./crates/gateway-pg" }
 gateway-http = { path = "./crates/gateway-http" }
 presenter-rest = { path = "./crates/presenter-rest" }
-app-web = { path = "./crates/app-web" }
+main-web = { path = "./crates/main-web" }
 # External dependencies versions
 actix-web = "4"
 actix-rt = "~2"

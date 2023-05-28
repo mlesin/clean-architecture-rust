@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use entities::cat_fact_entity::CatFactEntity;
+use app_domain::cat_fact_entity::CatFactEntity;
 
 #[cfg(test)]
 use mockall::{predicate::*, *};

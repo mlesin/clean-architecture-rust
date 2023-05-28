@@ -1,5 +1,5 @@
 [package]
-name = "app-web"
+name = "main-web"
 version = "0.1.0"
 edition = "2021"
 

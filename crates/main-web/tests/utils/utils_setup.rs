@@ -16,7 +16,7 @@ pub async fn spawn_app(connopts: &PgConnectOptions) -> String {
         .get_database()
         .expect("Can't get test database name");
 
-    let server = app_web::setup(
+    let server = main_web::setup(
         listener,
         db_name.to_string(),
         "http://127.0.0.1:3333".to_string(),

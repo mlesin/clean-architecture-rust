@@ -1,4 +1,4 @@
-use business::gateways::{cat_facts::CatFactsGateway, dog_facts::DogFactsGateway};
+use app_core::gateways::{cat_facts::CatFactsGateway, dog_facts::DogFactsGateway};
 
 pub struct AppState {
     pub app_name: String,

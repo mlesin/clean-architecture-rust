@@ -5,9 +5,9 @@ use crate::{
     shared::{app_state::AppState, error_presenter::ErrorReponse},
 };
 use actix_web::{get, web, HttpResponse};
-use business::mappers::presenter::ApiMapper;
-use business::usecases::interfaces::UseCase;
-use business::usecases::{
+use app_core::mappers::presenter::ApiMapper;
+use app_core::usecases::interfaces::UseCase;
+use app_core::usecases::{
     get_all_cat_facts::GetAllCatFactsUseCase, get_one_random_cat_fact::GetOneRandomCatFactUseCase,
 };
 

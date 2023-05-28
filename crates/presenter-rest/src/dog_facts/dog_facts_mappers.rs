@@ -1,8 +1,8 @@
 use crate::dog_facts::{
     dog_facts_payloads::DogFactPayload, dog_facts_presenters::DogFactPresenter,
 };
-use business::mappers::presenter::ApiMapper;
-use entities::dog_fact_entity::DogFactEntity;
+use app_core::mappers::presenter::ApiMapper;
+use app_domain::dog_fact_entity::DogFactEntity;
 
 pub struct DogFactPresenterMapper {}
 

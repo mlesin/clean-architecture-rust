@@ -5,14 +5,14 @@ use crate::{
     shared::{app_state::AppState, error_presenter::ErrorReponse},
 };
 use actix_web::{get, web, HttpResponse};
-use business::{
+use app_core::{
     mappers::presenter::ApiMapper,
     usecases::{
         get_all_dog_facts::GetAllDogFactsUseCase, get_one_dog_fact_by_id::GetOneDogFactByIdUseCase,
         interfaces::UseCase,
     },
 };
-use entities::{dog_fact_entity::DogFactEntity, error::ApiError};
+use app_domain::{dog_fact_entity::DogFactEntity, error::ApiError};
 
 pub fn routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all_dog_facts)

@@ -1,4 +1,4 @@
-use entities::error::ApiError;
+use app_domain::error::ApiError;
 use std::error::Error;
 
 pub struct ErrorHandlingUtils {}

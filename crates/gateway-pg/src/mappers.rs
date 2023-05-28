@@ -1,6 +1,6 @@
 use crate::models::DogFact;
-use business::mappers::gateway::GatewayMapper;
-use entities::dog_fact_entity::DogFactEntity;
+use app_core::mappers::gateway::GatewayMapper;
+use app_domain::dog_fact_entity::DogFactEntity;
 
 pub struct DogFactDbMapper {}
 

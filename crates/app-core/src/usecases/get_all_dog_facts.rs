@@ -4,7 +4,7 @@ use crate::{
     gateways::dog_facts::DogFactsGateway, usecases::interfaces::UseCase,
     utils::error_handling_utils::ErrorHandlingUtils,
 };
-use entities::{dog_fact_entity::DogFactEntity, error::ApiError};
+use app_domain::{dog_fact_entity::DogFactEntity, error::ApiError};
 
 pub struct GetAllDogFactsUseCase<'a> {
     gateway: &'a dyn DogFactsGateway,
@@ -43,7 +43,7 @@ mod tests {
     use std::io::{Error, ErrorKind};
 
     use crate::gateways::dog_facts::{MockDogFactsGateway, MockDogFactsGatewayRepo};
-    use entities::dog_fact_entity::DogFactEntity;
+    use app_domain::dog_fact_entity::DogFactEntity;
 
     #[actix_rt::test]
     async fn test_should_return_error_with_generic_message_when_unexpected_repo_error() {

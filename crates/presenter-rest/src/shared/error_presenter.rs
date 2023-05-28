@@ -1,6 +1,6 @@
 use actix_web::{error::ResponseError, http::StatusCode, HttpResponse};
+use app_domain::error::ApiError;
 use derive_more::Display;
-use entities::error::ApiError;
 use serde::Deserialize;
 use serde::Serialize;
 use thiserror::Error;
