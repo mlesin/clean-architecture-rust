@@ -6,7 +6,6 @@ use crate::{
 };
 use actix_web::{get, web, HttpResponse};
 use app_core::mappers::presenter::ApiMapper;
-use app_core::usecases::interfaces::UseCase;
 use app_core::usecases::{
     get_all_cat_facts::GetAllCatFactsUseCase, get_one_random_cat_fact::GetOneRandomCatFactUseCase,
 };

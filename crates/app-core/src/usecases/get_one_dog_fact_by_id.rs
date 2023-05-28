@@ -1,9 +1,4 @@
-use async_trait::async_trait;
-
-use crate::{
-    services::DatabaseService, usecases::interfaces::UseCase,
-    utils::error_handling_utils::ErrorHandlingUtils,
-};
+use crate::{services::DatabaseService, utils::error_handling_utils::ErrorHandlingUtils};
 use app_domain::{entities::DogFactEntity, error::AppError};
 
 pub struct GetOneDogFactByIdUseCase<'a> {
@@ -20,9 +15,8 @@ impl<'a> GetOneDogFactByIdUseCase<'a> {
     }
 }
 
-#[async_trait(?Send)]
-impl<'a> UseCase<DogFactEntity> for GetOneDogFactByIdUseCase<'a> {
-    async fn execute(&self) -> Result<DogFactEntity, AppError> {
+impl<'a> GetOneDogFactByIdUseCase<'a> {
+    pub async fn execute(&self) -> Result<DogFactEntity, AppError> {
         let dog_fact = {
             let mut repo = self.service.get_repo().await.unwrap(); //FIXME
             let fact = repo.get_dog_fact_by_id(*self.dog_fact_id).await;

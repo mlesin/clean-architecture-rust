@@ -9,7 +9,6 @@ use app_core::{
     mappers::presenter::ApiMapper,
     usecases::{
         get_all_dog_facts::GetAllDogFactsUseCase, get_one_dog_fact_by_id::GetOneDogFactByIdUseCase,
-        interfaces::UseCase,
     },
 };
 use app_domain::{entities::DogFactEntity, error::AppError};
