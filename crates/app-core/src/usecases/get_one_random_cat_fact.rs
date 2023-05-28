@@ -4,7 +4,7 @@ use crate::{
     services::DatabaseService, usecases::interfaces::UseCase,
     utils::error_handling_utils::ErrorHandlingUtils,
 };
-use app_domain::{entities::CatFactEntity, error::ApiError};
+use app_domain::{entities::CatFactEntity, error::AppError};
 
 pub struct GetOneRandomCatFactUseCase<'a> {
     service: &'a dyn DatabaseService,
@@ -18,7 +18,7 @@ impl<'a> GetOneRandomCatFactUseCase<'a> {
 
 #[async_trait(?Send)]
 impl<'a> UseCase<CatFactEntity> for GetOneRandomCatFactUseCase<'a> {
-    async fn execute(&self) -> Result<CatFactEntity, ApiError> {
+    async fn execute(&self) -> Result<CatFactEntity, AppError> {
         let cat_fact = {
             let mut repo = self.service.get_repo().await.unwrap(); //FIXME
             let fact = repo.get_random_cat_fact().await;

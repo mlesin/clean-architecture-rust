@@ -120,25 +120,6 @@ impl<'a> DatabaseServiceRepo for DatabaseServiceRepoPG<'a> {
         } else {
             todo!()
         }
-
-        // let response = self
-        //     .http_connection
-        //     .client()
-        //     .get(&format!("{}/fact", &self.source))
-        //     .send()
-        //     .await;
-
-        // match response {
-        //     Ok(r) => {
-        //         let json = r.json::<CatFactApiModel>().await;
-
-        //         match json {
-        //             Ok(http_obj) => Ok(CatFactHttpMapper::to_entity(http_obj)),
-        //             Err(e) => Err(Box::new(e)),
-        //         }
-        //     }
-        //     Err(e) => Err(Box::new(e)),
-        // }
     }
 
     async fn get_all_cat_facts(&self) -> Result<Vec<CatFactEntity>, Box<dyn Error>> {
@@ -157,28 +138,5 @@ impl<'a> DatabaseServiceRepo for DatabaseServiceRepoPG<'a> {
         } else {
             todo!()
         }
-
-        // let response = self
-        //     .http_connection
-        //     .client()
-        //     .get(&format!("{}/facts", &self.source))
-        //     .send()
-        //     .await;
-
-        // match response {
-        //     Ok(r) => {
-        //         let json = r.json::<CatFactsApiModel>().await;
-
-        //         match json {
-        //             Ok(j) => Ok(j
-        //                 .data
-        //                 .into_iter()
-        //                 .map(CatFactHttpMapper::to_entity)
-        //                 .collect::<Vec<CatFactEntity>>()),
-        //             Err(e) => Err(Box::new(e)),
-        //         }
-        //     }
-        //     Err(e) => Err(Box::new(e)),
-        // }
     }
 }

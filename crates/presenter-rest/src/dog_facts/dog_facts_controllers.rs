@@ -12,7 +12,7 @@ use app_core::{
         interfaces::UseCase,
     },
 };
-use app_domain::{entities::DogFactEntity, error::ApiError};
+use app_domain::{entities::DogFactEntity, error::AppError};
 
 pub fn routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all_dog_facts)
@@ -22,7 +22,7 @@ pub fn routes(cfg: &mut web::ServiceConfig) {
 #[get("/")]
 async fn get_all_dog_facts(data: web::Data<AppState>) -> Result<HttpResponse, ErrorReponse> {
     let get_all_dog_facts_usecase = GetAllDogFactsUseCase::new(&*data.db_service);
-    let dog_facts: Result<Vec<DogFactEntity>, ApiError> = get_all_dog_facts_usecase.execute().await;
+    let dog_facts: Result<Vec<DogFactEntity>, AppError> = get_all_dog_facts_usecase.execute().await;
 
     dog_facts.map_err(ErrorReponse::map_io_error).map(|facts| {
         HttpResponse::Ok().json(

@@ -1,5 +1,5 @@
 use actix_web::{error::ResponseError, http::StatusCode, HttpResponse};
-use app_domain::error::ApiError;
+use app_domain::error::AppError;
 use derive_more::Display;
 use serde::Deserialize;
 use serde::Serialize;
@@ -36,7 +36,7 @@ impl ResponseError for ErrorReponse {
 }
 
 impl ErrorReponse {
-    pub fn map_io_error(e: ApiError) -> ErrorReponse {
+    pub fn map_io_error(e: AppError) -> ErrorReponse {
         match e.get_error_code() {
             400 => ErrorReponse {
                 status_code: StatusCode::BAD_REQUEST,

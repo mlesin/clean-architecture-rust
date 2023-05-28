@@ -4,7 +4,7 @@ use crate::{
     services::DatabaseService, usecases::interfaces::UseCase,
     utils::error_handling_utils::ErrorHandlingUtils,
 };
-use app_domain::{entities::DogFactEntity, error::ApiError};
+use app_domain::{entities::DogFactEntity, error::AppError};
 
 pub struct GetAllDogFactsUseCase<'a> {
     service: &'a dyn DatabaseService,
@@ -18,7 +18,7 @@ impl<'a> GetAllDogFactsUseCase<'a> {
 
 #[async_trait(?Send)]
 impl<'a> UseCase<Vec<DogFactEntity>> for GetAllDogFactsUseCase<'a> {
-    async fn execute(&self) -> Result<Vec<DogFactEntity>, ApiError> {
+    async fn execute(&self) -> Result<Vec<DogFactEntity>, AppError> {
         let dog_facts = {
             let mut repo = self.service.get_repo().await.unwrap(); //FIXME
             let facts = repo.get_all_dog_facts().await;
