@@ -2,7 +2,7 @@ use crate::utils::utils_setup::{setup, spawn_app};
 use presenter_rest::dog_facts::dog_facts_presenters::DogFactPresenter;
 use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 
-#[sqlx::test(migrations = "../../migrations")]
+#[sqlx::test(migrations = "../service-db/migrations")]
 async fn test_should_return_multiple_results(_opts: PgPoolOptions, connopts: PgConnectOptions) {
     // setup
     setup(&connopts).await;
@@ -28,7 +28,7 @@ async fn test_should_return_multiple_results(_opts: PgPoolOptions, connopts: PgC
     assert_eq!(content_json[0].fact_id, 1);
 }
 
-#[sqlx::test(migrations = "../../migrations")]
+#[sqlx::test(migrations = "../service-db/migrations")]
 async fn test_should_return_one_results_only(_opts: PgPoolOptions, connopts: PgConnectOptions) {
     // setup
     setup(&connopts).await;

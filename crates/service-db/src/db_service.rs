@@ -15,18 +15,6 @@ use app_core::{
 };
 use app_domain::entities::{CatFactEntity, DogFactEntity};
 
-struct DatabaseServiceRepoPG<'a> {
-    transaction: Arc<Mutex<Option<Transaction<'a, Postgres>>>>,
-}
-
-impl<'a> DatabaseServiceRepoPG<'a> {
-    pub async fn new(pool: Pool<Postgres>) -> Result<DatabaseServiceRepoPG<'a>, Box<dyn Error>> {
-        Ok(DatabaseServiceRepoPG {
-            transaction: Arc::new(Mutex::new(Some(pool.begin().await?))),
-        })
-    }
-}
-
 pub struct DatabaseServicePG {
     pool: Pool<Postgres>,
 }
@@ -57,6 +45,18 @@ impl DatabaseService for DatabaseServicePG {
         Ok(Box::new(
             DatabaseServiceRepoPG::new(self.pool.clone()).await?,
         ))
+    }
+}
+
+struct DatabaseServiceRepoPG<'a> {
+    transaction: Arc<Mutex<Option<Transaction<'a, Postgres>>>>,
+}
+
+impl<'a> DatabaseServiceRepoPG<'a> {
+    pub async fn new(pool: Pool<Postgres>) -> Result<DatabaseServiceRepoPG<'a>, Box<dyn Error>> {
+        Ok(DatabaseServiceRepoPG {
+            transaction: Arc::new(Mutex::new(Some(pool.begin().await?))),
+        })
     }
 }
 
