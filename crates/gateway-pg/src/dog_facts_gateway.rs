@@ -10,7 +10,7 @@ use app_core::{
     gateways::dog_facts::{DogFactsGateway, DogFactsGatewayRepo},
     mappers::gateway::GatewayMapper,
 };
-use app_domain::dog_fact_entity::DogFactEntity;
+use app_domain::entities::DogFactEntity;
 
 struct DogFactsGatewayRepoPG<'a> {
     transaction: Arc<Mutex<Option<Transaction<'a, Postgres>>>>,

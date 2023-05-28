@@ -4,7 +4,7 @@ use crate::{
     gateways::cat_facts::CatFactsGateway, usecases::interfaces::UseCase,
     utils::error_handling_utils::ErrorHandlingUtils,
 };
-use app_domain::{cat_fact_entity::CatFactEntity, error::ApiError};
+use app_domain::{entities::CatFactEntity, error::ApiError};
 
 pub struct GetAllCatFactsUseCase<'a> {
     gateway: &'a dyn CatFactsGateway,

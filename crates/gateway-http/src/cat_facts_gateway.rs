@@ -7,7 +7,7 @@ use crate::{
     models::{CatFactApiModel, CatFactsApiModel},
 };
 use app_core::{gateways::cat_facts::CatFactsGateway, mappers::gateway::GatewayMapper};
-use app_domain::cat_fact_entity::CatFactEntity;
+use app_domain::entities::CatFactEntity;
 
 pub struct CatFactsgatewayHTTP {
     pub http_connection: HttpConnection,

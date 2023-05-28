@@ -12,7 +12,7 @@ use app_core::{
         interfaces::UseCase,
     },
 };
-use app_domain::{dog_fact_entity::DogFactEntity, error::ApiError};
+use app_domain::{entities::DogFactEntity, error::ApiError};
 
 pub fn routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_all_dog_facts)
