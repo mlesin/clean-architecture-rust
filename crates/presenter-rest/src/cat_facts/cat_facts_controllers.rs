@@ -18,7 +18,7 @@ pub fn routes(cfg: &mut web::ServiceConfig) {
 
 #[get("/")]
 async fn get_all_cat_facts(data: web::Data<AppState>) -> Result<HttpResponse, ErrorReponse> {
-    let get_all_cat_facts_usecase = GetAllCatFactsUseCase::new(&*data.cats_gateway);
+    let get_all_cat_facts_usecase = GetAllCatFactsUseCase::new(&*data.db_service);
     let cat_facts = get_all_cat_facts_usecase.execute().await;
 
     cat_facts.map_err(ErrorReponse::map_io_error).map(|facts| {
@@ -33,7 +33,7 @@ async fn get_all_cat_facts(data: web::Data<AppState>) -> Result<HttpResponse, Er
 
 #[get("/random")]
 async fn get_one_random_cat_fact(data: web::Data<AppState>) -> Result<HttpResponse, ErrorReponse> {
-    let get_one_random_cat_fact_usecase = GetOneRandomCatFactUseCase::new(&*data.cats_gateway);
+    let get_one_random_cat_fact_usecase = GetOneRandomCatFactUseCase::new(&*data.db_service);
     let cat_fact = get_one_random_cat_fact_usecase.execute().await;
 
     cat_fact

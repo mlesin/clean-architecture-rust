@@ -25,7 +25,7 @@ async fn test_should_return_multiple_results(_opts: PgPoolOptions, connopts: PgC
         content_json[0].fact,
         "The first true cats came into existence about 12 million years ago and were the Proailurus."
     );
-    assert_eq!(content_json[0].nb_chars, 91);
+    assert_eq!(content_json[0].id, 1);
 }
 
 #[sqlx::test(migrations = "../../migrations")]
@@ -45,6 +45,6 @@ async fn test_should_return_one_results_only(_opts: PgPoolOptions, connopts: PgC
 
     let content_json = response.json::<CatFactPresenter>().await.unwrap();
 
-    assert_eq!(content_json.fact, "In the 1930s, two Russian biologists discovered that color change in Siamese kittens depend on their body temperature. Siamese cats carry albino genes that work only when the body temperature is above 98° F. If these kittens are left in a very warm room, their points won’t darken and they will stay a creamy white.");
-    assert_eq!(content_json.nb_chars, 315);
+    assert_eq!(content_json.fact, "The first true cats came into existence about 12 million years ago and were the Proailurus.");
+    assert_eq!(content_json.id, 1);
 }

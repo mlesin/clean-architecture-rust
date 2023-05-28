@@ -1,10 +1,8 @@
-use actix_web::{web, App, HttpResponse, HttpServer};
 use sqlx::{postgres::PgConnectOptions, ConnectOptions};
-use std::net::{TcpListener, TcpStream};
+use std::net::TcpListener;
 
 use crate::integration_tests::fixtures::fixtures_run::execute_imports;
-use crate::utils::utils_file::read_from_file;
-use gateway_http::models::{CatFactApiModel, CatFactsApiModel};
+// use crate::utils::utils_file::read_from_file;
 
 pub async fn spawn_app(connopts: &PgConnectOptions) -> String {
     // Let the OS assign a port (:0)
@@ -22,45 +20,45 @@ pub async fn spawn_app(connopts: &PgConnectOptions) -> String {
         "http://127.0.0.1:3333".to_string(),
     );
 
-    if TcpStream::connect("127.0.0.1:3333").is_ok() {
-        println!("Http source faked server already running");
-    } else {
-        spawn_http_spi();
-    }
+    // if TcpStream::connect("127.0.0.1:3333").is_ok() {
+    //     println!("Http source faked server already running");
+    // } else {
+    //     spawn_http_spi();
+    // }
 
     let _ = tokio::spawn(server);
 
     format!("http://127.0.0.1:{}", port)
 }
 
-pub fn spawn_http_spi() -> String {
-    async fn facts_route() -> HttpResponse {
-        let json =
-            read_from_file::<CatFactsApiModel>("tests/integration_tests/fixtures/cat_facts.json")
-                .unwrap();
-        HttpResponse::Ok().json(json)
-    }
+// pub fn spawn_http_spi() -> String {
+//     async fn facts_route() -> HttpResponse {
+//         let json =
+//             read_from_file::<CatFactsApiModel>("tests/integration_tests/fixtures/cat_facts.json")
+//                 .unwrap();
+//         HttpResponse::Ok().json(json)
+//     }
 
-    async fn random_fact_route() -> HttpResponse {
-        HttpResponse::Ok().json(CatFactApiModel {
-            fact: String::from("In the 1930s, two Russian biologists discovered that color change in Siamese kittens depend on their body temperature. Siamese cats carry albino genes that work only when the body temperature is above 98° F. If these kittens are left in a very warm room, their points won’t darken and they will stay a creamy white."),
-            length: 315,
-        })
-    }
+//     async fn random_fact_route() -> HttpResponse {
+//         HttpResponse::Ok().json(CatFactApiModel {
+//             fact: String::from("In the 1930s, two Russian biologists discovered that color change in Siamese kittens depend on their body temperature. Siamese cats carry albino genes that work only when the body temperature is above 98° F. If these kittens are left in a very warm room, their points won’t darken and they will stay a creamy white."),
+//             length: 315,
+//         })
+//     }
 
-    let s1 = HttpServer::new(move || {
-        App::new()
-            .route("facts", web::get().to(facts_route))
-            .route("fact", web::get().to(random_fact_route))
-    })
-    .bind("127.0.0.1:3333")
-    .expect("woops")
-    .run();
+//     let s1 = HttpServer::new(move || {
+//         App::new()
+//             .route("facts", web::get().to(facts_route))
+//             .route("fact", web::get().to(random_fact_route))
+//     })
+//     .bind("127.0.0.1:3333")
+//     .expect("woops")
+//     .run();
 
-    let _ = tokio::spawn(s1);
+//     let _ = tokio::spawn(s1);
 
-    "http://127.0.0.1:3333".to_string()
-}
+//     "http://127.0.0.1:3333".to_string()
+// }
 
 pub async fn setup(connopts: &PgConnectOptions) {
     let mut db_connection_postgres_db = connopts.connect().await.unwrap();

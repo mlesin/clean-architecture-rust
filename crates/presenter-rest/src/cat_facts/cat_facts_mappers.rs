@@ -9,7 +9,7 @@ impl ApiMapper<CatFactEntity, CatFactPresenter, CatFactPayload> for CatFactPrese
     fn to_api(entity: CatFactEntity) -> CatFactPresenter {
         CatFactPresenter {
             fact: entity.fact_txt,
-            nb_chars: entity.fact_length,
+            id: entity.fact_id,
         }
     }
 

@@ -1,7 +1,7 @@
-use app_core::gateways::{cat_facts::CatFactsGateway, dog_facts::DogFactsGateway};
+use app_core::services::{AuthService, DatabaseService};
 
 pub struct AppState {
     pub app_name: String,
-    pub cats_gateway: Box<dyn CatFactsGateway + Send + Sync>,
-    pub dogs_gateway: Box<dyn DogFactsGateway + Send + Sync>,
+    pub auth_service: Box<dyn AuthService + Send + Sync>,
+    pub db_service: Box<dyn DatabaseService + Send + Sync>,
 }

@@ -1,3 +1,3 @@
-pub mod dog_facts_gateway;
+pub mod db_service;
 pub mod mappers;
 pub mod models;

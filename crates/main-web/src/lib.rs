@@ -2,9 +2,9 @@ use std::{env, net::TcpListener};
 
 use actix_web::middleware::Logger;
 use actix_web::{rt, web, App, HttpServer};
-use gateway_http::{cat_facts_gateway::CatFactsgatewayHTTP, connection::HttpConnection};
-use gateway_pg::dog_facts_gateway::DogFactsGatewayPG;
 use presenter_rest::shared::app_state::AppState;
+use service_auth::{cat_facts_service::CatFactsserviceHTTP, connection::HttpConnection};
+use service_db::db_service::DatabaseServicePG;
 
 pub async fn setup(
     listener: TcpListener,
@@ -17,11 +17,11 @@ pub async fn setup(
 
     let data = web::Data::new(AppState {
         app_name: String::from("Animal Facts API"),
-        cats_gateway: Box::new(CatFactsgatewayHTTP {
+        auth_service: Box::new(CatFactsserviceHTTP {
             http_connection,
             source: cats_source,
         }),
-        dogs_gateway: Box::new(DogFactsGatewayPG::new(&db_name).await.unwrap()), //FIXME
+        db_service: Box::new(DatabaseServicePG::new(&db_name).await.unwrap()), //FIXME
     });
 
     let port = listener.local_addr().unwrap().to_string();

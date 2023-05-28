@@ -10,19 +10,19 @@ name = "animal_facts_api"
 path = "src/main.rs"
 
 [dependencies]
-app-domain.workspace = true
-app-core.workspace = true
-gateway-pg.workspace = true
-gateway-http.workspace = true
-presenter-rest.workspace = true
+# app-domain.workspace = true
+# app-core.workspace = true
+# service-pg.workspace = true
+# service-http.workspace = true
+# presenter-rest.workspace = true
 main-web.workspace = true
 
 [workspace]
 members = [
     "crates/app-domain",
     "crates/app-core",
-    "crates/gateway-pg",
-    "crates/gateway-http",
+    "crates/service-db",
+    "crates/service-auth",
     "crates/presenter-rest",
     "crates/main-web",
 ]
@@ -30,8 +30,8 @@ members = [
 [workspace.dependencies]
 app-domain = { path = "./crates/app-domain" }
 app-core = { path = "./crates/app-core" }
-gateway-pg = { path = "./crates/gateway-pg" }
-gateway-http = { path = "./crates/gateway-http" }
+service-db = { path = "./crates/service-db" }
+service-auth = { path = "./crates/service-auth" }
 presenter-rest = { path = "./crates/presenter-rest" }
 main-web = { path = "./crates/main-web" }
 # External dependencies versions

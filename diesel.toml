@@ -2,4 +2,4 @@
 # see diesel.rs/guides/configuring-diesel-cli
 
 [print_schema]
-file = "crates/gateway-pg/src/schema.rs"
+file = "crates/service-pg/src/schema.rs"
