@@ -9,6 +9,8 @@ edition = "2021"
 app-domain.workspace = true
 # External dependencies
 async-trait.workspace = true
+dyno.workspace = true
+thiserror.workspace = true
 
 [dev-dependencies]
 actix-rt.workspace = true

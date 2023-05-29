@@ -10,7 +10,8 @@ app-domain.workspace = true
 app-core.workspace = true
 # External dependencies
 async-trait.workspace = true
-dotenv = "~0.15"
+dotenv.workspace = true
+dyno.workspace = true
 regex.workspace = true
 sqlx = { workspace = true, features = [
     "runtime-actix-rustls",
