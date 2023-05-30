@@ -1,10 +1,11 @@
+use std::marker::PhantomData;
 use std::{env, net::TcpListener};
 
 use actix_web::middleware::Logger;
 use actix_web::{rt, web, App, HttpServer};
 use presenter_rest::shared::app_state::AppState;
 use service_auth::{cat_facts_service::CatFactsserviceHTTP, connection::HttpConnection};
-use service_db::db_service::DatabaseServicePG;
+use service_db::db_service::{CatRepo, DogRepo, PersistencePG};
 
 pub async fn setup(
     listener: TcpListener,
@@ -21,16 +22,24 @@ pub async fn setup(
             http_connection,
             source: cats_source,
         }),
-        db_service: Box::new(DatabaseServicePG::new(&db_name).await.unwrap()), //FIXME
+        persistence_service: PersistencePG::new(&db_name).await.unwrap(), //FIXME
+        dog_repo: PhantomData::<DogRepo>,
+        cat_repo: PhantomData::<CatRepo>,
     });
 
     let port = listener.local_addr().unwrap().to_string();
 
     let server = HttpServer::new(move || {
         App::new()
-            .app_data(data.clone())
-            .wrap(Logger::default())
-            .configure(presenter_rest::shared::routes::routes)
+                .app_data(data.clone())
+                .wrap(Logger::default())
+                .configure(
+                    presenter_rest::shared::routes::RestControllers::<
+                        PersistencePG,
+                        DogRepo,
+                        CatRepo,
+                    >::routes,
+                )
     })
     .listen(listener)?
     .run();
