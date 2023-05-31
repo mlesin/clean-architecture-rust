@@ -34,10 +34,11 @@ where
             fact
         };
 
-        Ok(dog_fact.ok_or(UseCaseError::Business("No dog fact found".into()))?)
+        dog_fact.ok_or(UseCaseError::Business("No dog fact found".into()))
     }
 }
 
+#[allow(clippy::await_holding_lock)]
 #[cfg(test)]
 mod tests {
     use super::*;

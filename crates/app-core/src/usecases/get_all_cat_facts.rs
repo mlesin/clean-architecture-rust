@@ -37,6 +37,7 @@ where
     }
 }
 
+#[allow(clippy::await_holding_lock)]
 #[cfg(test)]
 mod tests {
     use super::*;

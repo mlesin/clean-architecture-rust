@@ -26,8 +26,8 @@ pub trait Persistence: 'static + Send + Sync {
 #[cfg_attr(test, automock)]
 #[async_trait]
 pub trait Transaction: Send + Sync {
-    async fn commit(self: Self) -> Result<(), RepositoryError>;
-    async fn rollback(self: Self) -> Result<(), RepositoryError>;
+    async fn commit(self) -> Result<(), RepositoryError>;
+    async fn rollback(self) -> Result<(), RepositoryError>;
 }
 
 #[derive(Error, Debug)]

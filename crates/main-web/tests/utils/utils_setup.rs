@@ -26,7 +26,7 @@ pub async fn spawn_app(connopts: &PgConnectOptions) -> String {
     //     spawn_http_spi();
     // }
 
-    let _ = tokio::spawn(server);
+    tokio::spawn(server);
 
     format!("http://127.0.0.1:{}", port)
 }

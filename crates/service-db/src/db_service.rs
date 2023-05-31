@@ -19,7 +19,7 @@ pub struct PersistencePG {
 
 impl PersistencePG {
     pub async fn new(db_name: &str) -> Result<Self, RepositoryError> {
-        let re = Regex::new(r#"(^postgresql:\/\/[^@]+@[^\/]+)\/[^\/]+"#).unwrap();
+        let re = Regex::new(r#"(^postgresql://[^@]+@[^/]+)/[^/]+"#).unwrap();
 
         let database_url = dotenv::var("DATABASE_URL").expect("DATABASE_URL must be set");
         let database = re.replace_all(&database_url, |caps: &regex::Captures| {
@@ -54,13 +54,13 @@ pub struct TransactionPG(pub Transaction<'static, Postgres>);
 
 #[async_trait()]
 impl services::Transaction for TransactionPG {
-    async fn commit(self: Self) -> Result<(), RepositoryError> {
+    async fn commit(self) -> Result<(), RepositoryError> {
         self.0
             .commit()
             .await
             .map_err(|e| RepositoryError(e.to_string()))
     }
-    async fn rollback(self: Self) -> Result<(), RepositoryError> {
+    async fn rollback(self) -> Result<(), RepositoryError> {
         self.0
             .rollback()
             .await

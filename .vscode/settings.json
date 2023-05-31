@@ -1,1 +1,8 @@
-{}
+{
+  "rust-analyzer.cargo.buildScripts.invocationLocation": "root",
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.check.extraArgs": [
+    "--target-dir",
+    "target/rust-analyzer-check"
+  ]
+}
