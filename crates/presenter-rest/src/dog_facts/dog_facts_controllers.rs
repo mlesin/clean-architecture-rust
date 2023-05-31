@@ -9,23 +9,21 @@ use crate::{
 use actix_web::{web, HttpResponse};
 use app_core::{
     mappers::presenter::ApiMapper,
-    services::{DBCatRepo, DBDogRepo, Persistence, Transaction},
+    services::{DBDogRepo, Persistence, Transaction},
     usecases::{
         get_all_dog_facts::GetAllDogFactsUseCase, get_one_dog_fact_by_id::GetOneDogFactByIdUseCase,
     },
 };
 
-pub struct DogFactControllers<P, DR, CR> {
+pub struct DogFactControllers<P, R> {
     persistance: PhantomData<P>,
-    dog_repository: PhantomData<DR>,
-    cat_repository: PhantomData<CR>,
+    dog_repository: PhantomData<R>,
 }
 
-impl<P, DR, CR> DogFactControllers<P, DR, CR>
+impl<P, R> DogFactControllers<P, R>
 where
     P: Persistence + Clone,
-    DR: DBDogRepo<P>,
-    CR: DBCatRepo<P>,
+    R: DBDogRepo<P>,
     <P as Persistence>::Transaction: Transaction,
 {
     pub fn routes(cfg: &mut web::ServiceConfig) {
@@ -33,9 +31,9 @@ where
             .service(web::resource("/{fact_id}").route(web::get().to(Self::get_one_by_id)));
     }
 
-    async fn get_all(data: web::Data<AppState<P, DR, CR>>) -> Result<HttpResponse, ErrorReponse> {
+    async fn get_all(data: web::Data<AppState<P>>) -> Result<HttpResponse, ErrorReponse> {
         let get_all_dog_facts_usecase =
-            GetAllDogFactsUseCase::<P, DR>::new(data.persistence_service.clone());
+            GetAllDogFactsUseCase::<P, R>::new(data.persistence_service.clone());
         let dog_facts = get_all_dog_facts_usecase
             .execute()
             .await
@@ -50,12 +48,12 @@ where
     }
 
     async fn get_one_by_id(
-        data: web::Data<AppState<P, DR, CR>>,
+        data: web::Data<AppState<P>>,
         path: web::Path<(i32,)>,
     ) -> Result<HttpResponse, ErrorReponse> {
         let fact_id = path.into_inner().0;
         let get_one_dog_fact_by_id_usecase =
-            GetOneDogFactByIdUseCase::<P, DR>::new(data.persistence_service.clone());
+            GetOneDogFactByIdUseCase::<P, R>::new(data.persistence_service.clone());
         let dog_fact = get_one_dog_fact_by_id_usecase
             .execute(&fact_id)
             .await

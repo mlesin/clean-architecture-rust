@@ -23,7 +23,7 @@ where
 {
     pub fn routes(config: &mut web::ServiceConfig) {
         config
-            .service(web::scope("/api/v1/dogs").configure(DogFactControllers::<P, D, C>::routes))
-            .service(web::scope("/api/v1/cats").configure(CatFactControllers::<P, C, D>::routes));
+            .service(web::scope("/api/v1/dogs").configure(DogFactControllers::<P, D>::routes))
+            .service(web::scope("/api/v1/cats").configure(CatFactControllers::<P, C>::routes));
     }
 }

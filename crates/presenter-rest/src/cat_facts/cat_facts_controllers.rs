@@ -9,7 +9,7 @@ use crate::{
 use actix_web::{web, HttpResponse};
 use app_core::{
     mappers::presenter::ApiMapper,
-    services::{DBCatRepo, DBDogRepo, Persistence},
+    services::{DBCatRepo, Persistence},
 };
 use app_core::{
     services::Transaction,
@@ -19,17 +19,15 @@ use app_core::{
     },
 };
 
-pub struct CatFactControllers<P, CR, DR> {
+pub struct CatFactControllers<P, R> {
     persistance: PhantomData<P>,
-    cat_repository: PhantomData<CR>,
-    dog_repository: PhantomData<DR>,
+    cat_repository: PhantomData<R>,
 }
 
-impl<P, CR, DR> CatFactControllers<P, CR, DR>
+impl<P, R> CatFactControllers<P, R>
 where
     P: Persistence + Clone,
-    CR: DBCatRepo<P>,
-    DR: DBDogRepo<P>,
+    R: DBCatRepo<P>,
     <P as Persistence>::Transaction: Transaction,
 {
     pub fn routes(cfg: &mut web::ServiceConfig) {
@@ -37,11 +35,9 @@ where
             .service(web::resource("/random").route(web::get().to(Self::get_one_random_cat_fact)));
     }
 
-    async fn get_all_cat_facts(
-        data: web::Data<AppState<P, DR, CR>>,
-    ) -> Result<HttpResponse, ErrorReponse> {
+    async fn get_all_cat_facts(data: web::Data<AppState<P>>) -> Result<HttpResponse, ErrorReponse> {
         let get_all_cat_facts_usecase =
-            GetAllCatFactsUseCase::<P, CR>::new(data.persistence_service.clone());
+            GetAllCatFactsUseCase::<P, R>::new(data.persistence_service.clone());
         let cat_facts = get_all_cat_facts_usecase.execute().await;
 
         cat_facts.map_err(ErrorReponse::map_io_error).map(|facts| {
@@ -55,10 +51,10 @@ where
     }
 
     async fn get_one_random_cat_fact(
-        data: web::Data<AppState<P, DR, CR>>,
+        data: web::Data<AppState<P>>,
     ) -> Result<HttpResponse, ErrorReponse> {
         let get_one_random_cat_fact_usecase =
-            GetOneRandomCatFactUseCase::<P, CR>::new(data.persistence_service.clone());
+            GetOneRandomCatFactUseCase::<P, R>::new(data.persistence_service.clone());
         let cat_fact = get_one_random_cat_fact_usecase.execute().await;
 
         cat_fact

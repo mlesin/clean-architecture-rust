@@ -1,4 +1,3 @@
-use std::marker::PhantomData;
 use std::{env, net::TcpListener};
 
 use actix_web::middleware::Logger;
@@ -17,14 +16,11 @@ pub async fn setup(
     let http_connection = HttpConnection {};
 
     let data = web::Data::new(AppState {
-        app_name: String::from("Animal Facts API"),
         auth_service: Box::new(CatFactsserviceHTTP {
             http_connection,
             source: cats_source,
         }),
         persistence_service: PersistencePG::new(&db_name).await.unwrap(), //FIXME
-        dog_repo: PhantomData::<DogRepo>,
-        cat_repo: PhantomData::<CatRepo>,
     });
 
     let port = listener.local_addr().unwrap().to_string();
