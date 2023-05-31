@@ -12,16 +12,19 @@ pub struct GetAllCatFactsUseCase<P, R> {
 }
 
 impl<P, CR> GetAllCatFactsUseCase<P, CR> {
-    pub fn new(persistance: P, repo: PhantomData<CR>) -> Self {
-        GetAllCatFactsUseCase { persistance, repo }
+    pub fn new(persistance: P) -> Self {
+        GetAllCatFactsUseCase {
+            persistance,
+            repo: PhantomData::<CR>,
+        }
     }
 }
 
-impl<'a, P, CR> GetAllCatFactsUseCase<P, CR>
+impl<P, CR> GetAllCatFactsUseCase<P, CR>
 where
-    P: Persistence<'a>,
-    <P as Persistence<'a>>::Transaction: Transaction,
-    CR: DBCatRepo<'a, P>,
+    P: Persistence,
+    <P as Persistence>::Transaction: Transaction,
+    CR: DBCatRepo<P>,
 {
     pub async fn execute(&self) -> Result<Vec<CatFactEntity>, AppError> {
         let cat_facts = {
@@ -43,99 +46,128 @@ where
 
 #[cfg(test)]
 mod tests {
-    // use super::*;
-    // use std::io::{Error, ErrorKind};
+    use super::*;
+    use lazy_static::lazy_static;
+    use std::sync::{Mutex, MutexGuard};
 
-    // use crate::services::{MockDatabaseService, MockDatabaseServiceRepo};
+    use crate::services::{MockDBCatRepo, MockPersistence, MockTransaction};
 
-    // #[actix_rt::test]
-    // async fn test_should_return_generic_message_when_unexpected_repo_error() {
-    //     // given the "all cat facts" usecase repo with an unexpected error
-    //     let mut db_service = MockDatabaseService::new();
-    //     db_service.expect_get_repo().with().times(1).returning(|| {
-    //         let mut db_service_repo = MockDatabaseServiceRepo::new();
-    //         db_service_repo
-    //             .expect_get_all_cat_facts()
-    //             .with()
-    //             .times(1)
-    //             .returning(|| Err(Box::new(Error::new(ErrorKind::Other, "oh no!"))));
-    //         db_service_repo
-    //             .expect_commit()
-    //             .times(1)
-    //             .returning(|| Ok(()));
-    //         Ok(Box::new(db_service_repo))
-    //     });
+    lazy_static! {
+        static ref MTX: Mutex<()> = Mutex::new(());
+    }
 
-    //     // when calling usecase
-    //     let get_all_cat_facts_usecase = GetAllCatFactsUseCase::new(&db_service);
-    //     let data = get_all_cat_facts_usecase.execute().await;
+    // When a test panics, it will poison the Mutex. Since we don't actually
+    // care about the state of the data we ignore that it is poisoned and grab
+    // the lock regardless.  If you just do `let _m = &MTX.lock().unwrap()`, one
+    // test panicking will cause all other tests that try and acquire a lock on
+    // that Mutex to also panic.
+    fn get_lock(m: &'static Mutex<()>) -> MutexGuard<'static, ()> {
+        match m.lock() {
+            Ok(guard) => guard,
+            Err(poisoned) => poisoned.into_inner(),
+        }
+    }
 
-    //     // then exception
-    //     assert!(data.is_err());
-    //     let result = data.unwrap_err();
-    //     assert_eq!("Cannot get all cat facts", result.message);
-    // }
+    #[actix_rt::test]
+    async fn test_should_return_generic_message_when_unexpected_repo_error() {
+        let _m = get_lock(&MTX);
 
-    // #[actix_rt::test]
-    // async fn test_should_return_empty_list() {
-    //     // given the "all cat facts" usecase repo returning an empty list
-    //     let mut db_service = MockDatabaseService::new();
-    //     db_service.expect_get_repo().with().times(1).returning(|| {
-    //         let mut db_service_repo = MockDatabaseServiceRepo::new();
-    //         db_service_repo
-    //             .expect_get_all_cat_facts()
-    //             .with()
-    //             .times(1)
-    //             .returning(|| Ok(Vec::<CatFactEntity>::new()));
-    //         db_service_repo
-    //             .expect_commit()
-    //             .times(1)
-    //             .returning(|| Ok(()));
-    //         Ok(Box::new(db_service_repo))
-    //     });
+        let mut persistence = MockPersistence::new();
+        persistence
+            .expect_get_transaction()
+            .with()
+            .times(1)
+            .returning(|| Ok(MockTransaction::new()));
 
-    //     // when calling usecase
-    //     let get_all_cat_facts_usecase = GetAllCatFactsUseCase::new(&db_service);
-    //     let data = get_all_cat_facts_usecase.execute().await.unwrap();
+        // given the "all cat facts" usecase repo with an unexpected error
+        let repo_ctx = MockDBCatRepo::<MockPersistence>::get_all_cat_facts_context();
+        repo_ctx
+            .expect()
+            .returning(|_tx| Err(crate::services::Error::DatabaseError));
 
-    //     // then assert the result is an empty list
-    //     assert_eq!(data.len(), 0);
-    // }
+        // when calling usecase
+        let get_all_cat_facts_usecase = GetAllCatFactsUseCase::<
+            MockPersistence,
+            MockDBCatRepo<MockPersistence>,
+        >::new(persistence);
+        let data = get_all_cat_facts_usecase.execute().await;
 
-    // #[actix_rt::test]
-    // async fn test_should_return_list() {
-    //     // given the "all cat facts" usecase repo returning a list of 2 entities
-    //     let mut db_service = MockDatabaseService::new();
-    //     db_service.expect_get_repo().with().times(1).returning(|| {
-    //         let mut db_service_repo = MockDatabaseServiceRepo::new();
-    //         db_service_repo
-    //             .expect_get_all_cat_facts()
-    //             .with()
-    //             .times(1)
-    //             .returning(|| {
-    //                 Ok(vec![
-    //                     CatFactEntity {
-    //                         fact_txt: String::from("fact1"),
-    //                         fact_id: 1,
-    //                     },
-    //                     CatFactEntity {
-    //                         fact_txt: String::from("fact2"),
-    //                         fact_id: 2,
-    //                     },
-    //                 ])
-    //             });
-    //         db_service_repo
-    //             .expect_commit()
-    //             .times(1)
-    //             .returning(|| Ok(()));
-    //         Ok(Box::new(db_service_repo))
-    //     });
+        // then exception
+        assert!(data.is_err());
+        let result = data.unwrap_err();
+        assert_eq!("Cannot get all cat facts", result.message);
+    }
 
-    //     // when calling usecase
-    //     let get_all_cat_facts_usecase = GetAllCatFactsUseCase::new(&db_service);
-    //     let data = get_all_cat_facts_usecase.execute().await.unwrap();
+    #[actix_rt::test]
+    async fn test_should_return_empty_list() {
+        let _m = get_lock(&MTX);
 
-    //     // then assert the result is an empty list
-    //     assert_eq!(data.len(), 2);
-    // }
+        let mut persistence = MockPersistence::new();
+        persistence
+            .expect_get_transaction()
+            .with()
+            .times(1)
+            .returning(|| {
+                let mut tx = MockTransaction::new();
+                tx.expect_commit().times(1).returning(|| Ok(()));
+                Ok(tx)
+            });
+
+        // given the "all cat facts" usecase repo returning an empty list
+        let repo_ctx = MockDBCatRepo::<MockPersistence>::get_all_cat_facts_context();
+        repo_ctx
+            .expect()
+            .returning(|_tx| Ok(Vec::<CatFactEntity>::new()));
+
+        // when calling usecase
+        let get_all_cat_facts_usecase = GetAllCatFactsUseCase::<
+            MockPersistence,
+            MockDBCatRepo<MockPersistence>,
+        >::new(persistence);
+        let data = get_all_cat_facts_usecase.execute().await.unwrap();
+
+        // then assert the result is an empty list
+        assert_eq!(data.len(), 0);
+    }
+
+    #[actix_rt::test]
+    async fn test_should_return_list() {
+        let _m = get_lock(&MTX);
+
+        let mut persistence = MockPersistence::new();
+        persistence
+            .expect_get_transaction()
+            .with()
+            .times(1)
+            .returning(|| {
+                let mut tx = MockTransaction::new();
+                tx.expect_commit().times(1).returning(|| Ok(()));
+                Ok(tx)
+            });
+
+        // given the "all cat facts" usecase repo returning a list of 2 entities
+        let repo_ctx = MockDBCatRepo::<MockPersistence>::get_all_cat_facts_context();
+        repo_ctx.expect().returning(|_tx| {
+            Ok(vec![
+                CatFactEntity {
+                    fact_txt: String::from("fact1"),
+                    fact_id: 1,
+                },
+                CatFactEntity {
+                    fact_txt: String::from("fact2"),
+                    fact_id: 2,
+                },
+            ])
+        });
+
+        // when calling usecase
+        let get_all_cat_facts_usecase = GetAllCatFactsUseCase::<
+            MockPersistence,
+            MockDBCatRepo<MockPersistence>,
+        >::new(persistence);
+        let data = get_all_cat_facts_usecase.execute().await.unwrap();
+
+        // then assert the result is an empty list
+        assert_eq!(data.len(), 2);
+    }
 }

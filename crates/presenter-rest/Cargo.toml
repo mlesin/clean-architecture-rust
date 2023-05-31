@@ -11,5 +11,5 @@ app-core.workspace = true
 # External dependencies
 actix-web = { workspace = true, features = ["openssl"] }
 derive_more.workspace = true
-serde.workspace = true
+serde = { workspace = true, features = ["derive"] }
 thiserror.workspace = true

@@ -25,12 +25,12 @@ pub struct CatFactControllers<P, CR, DR> {
     dog_repository: PhantomData<DR>,
 }
 
-impl<'a, P, CR, DR> CatFactControllers<P, CR, DR>
+impl<P, CR, DR> CatFactControllers<P, CR, DR>
 where
-    P: Persistence<'a> + Clone + 'static,
-    CR: DBCatRepo<'a, P> + Copy + 'static,
-    DR: DBDogRepo<'a, P> + Copy + 'static,
-    <P as Persistence<'a>>::Transaction: Transaction,
+    P: Persistence + Clone,
+    CR: DBCatRepo<P>,
+    DR: DBDogRepo<P>,
+    <P as Persistence>::Transaction: Transaction,
 {
     pub fn routes(cfg: &mut web::ServiceConfig) {
         cfg.service(web::resource("/").route(web::get().to(Self::get_all_cat_facts)))
@@ -41,7 +41,7 @@ where
         data: web::Data<AppState<P, DR, CR>>,
     ) -> Result<HttpResponse, ErrorReponse> {
         let get_all_cat_facts_usecase =
-            GetAllCatFactsUseCase::<P, CR>::new(data.persistence_service.clone(), data.cat_repo);
+            GetAllCatFactsUseCase::<P, CR>::new(data.persistence_service.clone());
         let cat_facts = get_all_cat_facts_usecase.execute().await;
 
         cat_facts.map_err(ErrorReponse::map_io_error).map(|facts| {
@@ -57,10 +57,8 @@ where
     async fn get_one_random_cat_fact(
         data: web::Data<AppState<P, DR, CR>>,
     ) -> Result<HttpResponse, ErrorReponse> {
-        let get_one_random_cat_fact_usecase = GetOneRandomCatFactUseCase::<P, CR>::new(
-            data.persistence_service.clone(),
-            data.cat_repo,
-        );
+        let get_one_random_cat_fact_usecase =
+            GetOneRandomCatFactUseCase::<P, CR>::new(data.persistence_service.clone());
         let cat_fact = get_one_random_cat_fact_usecase.execute().await;
 
         cat_fact

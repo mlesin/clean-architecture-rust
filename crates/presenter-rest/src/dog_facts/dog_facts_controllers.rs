@@ -21,12 +21,12 @@ pub struct DogFactControllers<P, DR, CR> {
     cat_repository: PhantomData<CR>,
 }
 
-impl<'a, P, DR, CR> DogFactControllers<P, DR, CR>
+impl<P, DR, CR> DogFactControllers<P, DR, CR>
 where
-    P: Persistence<'a> + Clone + 'static,
-    DR: DBDogRepo<'a, P> + Copy + 'static,
-    CR: DBCatRepo<'a, P> + Copy + 'static,
-    <P as Persistence<'a>>::Transaction: Transaction,
+    P: Persistence + Clone,
+    DR: DBDogRepo<P>,
+    CR: DBCatRepo<P>,
+    <P as Persistence>::Transaction: Transaction,
 {
     pub fn routes(cfg: &mut web::ServiceConfig) {
         cfg.service(web::resource("/").route(web::get().to(Self::get_all)))
@@ -35,7 +35,7 @@ where
 
     async fn get_all(data: web::Data<AppState<P, DR, CR>>) -> Result<HttpResponse, ErrorReponse> {
         let get_all_dog_facts_usecase =
-            GetAllDogFactsUseCase::<P, DR>::new(data.persistence_service.clone(), data.dog_repo);
+            GetAllDogFactsUseCase::<P, DR>::new(data.persistence_service.clone());
         let dog_facts = get_all_dog_facts_usecase
             .execute()
             .await
@@ -55,7 +55,7 @@ where
     ) -> Result<HttpResponse, ErrorReponse> {
         let fact_id = path.into_inner().0;
         let get_one_dog_fact_by_id_usecase =
-            GetOneDogFactByIdUseCase::<P, DR>::new(data.persistence_service.clone(), data.dog_repo);
+            GetOneDogFactByIdUseCase::<P, DR>::new(data.persistence_service.clone());
         let dog_fact = get_one_dog_fact_by_id_usecase
             .execute(&fact_id)
             .await

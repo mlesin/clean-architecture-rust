@@ -21,7 +21,7 @@ futures = "*"
 mockall.workspace = true
 reqwest = { workspace = true, features = ["json"] }
 serde_json.workspace = true
-serde.workspace = true
+serde = { workspace = true, features = ["derive"] }
 tokio = { workspace = true, features = ["full"] }
 uuid = { workspace = true, features = ["serde", "v4"] }
 sqlx = { workspace = true, features = [

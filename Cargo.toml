@@ -38,6 +38,7 @@ main-web = { path = "./crates/main-web" }
 actix-web = "4"
 actix-rt = "2"
 actix-http = "3"
+lazy_static = "1"
 log = "0.4"
 env_logger = "0.10"
 failure = "0.1"

@@ -16,10 +16,10 @@ pub struct RestControllers<P, D, C> {
 
 impl<'a, P, D, C> RestControllers<P, D, C>
 where
-    P: Persistence<'a> + Clone + 'static,
-    <P as Persistence<'a>>::Transaction: Transaction,
-    D: DBDogRepo<'a, P> + Copy + 'static,
-    C: DBCatRepo<'a, P> + Copy + 'static,
+    P: Persistence + Clone,
+    <P as Persistence>::Transaction: Transaction,
+    D: DBDogRepo<P>,
+    C: DBCatRepo<P>,
 {
     pub fn routes(config: &mut web::ServiceConfig) {
         config
