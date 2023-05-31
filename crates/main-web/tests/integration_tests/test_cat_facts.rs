@@ -1,5 +1,5 @@
 use crate::utils::utils_setup::{setup, spawn_app};
-use presenter_rest::cat_facts::cat_facts_presenters::CatFactPresenter;
+use presenter_rest::cat_facts::CatFactPresenter;
 use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 
 #[sqlx::test(migrations = "../service-db/migrations")]

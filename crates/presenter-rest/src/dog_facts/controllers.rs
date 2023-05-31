@@ -1,11 +1,7 @@
 use std::marker::PhantomData;
 
-use crate::{
-    dog_facts::{
-        dog_facts_mappers::DogFactPresenterMapper, dog_facts_presenters::DogFactPresenter,
-    },
-    shared::{app_state::AppState, error_presenter::ErrorReponse},
-};
+use super::{mappers::DogFactPresenterMapper, presenters::DogFactPresenter};
+use crate::shared::{app_state::RestAppState, error::ErrorReponse};
 use actix_web::{web, HttpResponse};
 use app_core::{
     mappers::presenter::ApiMapper,
@@ -31,7 +27,7 @@ where
             .service(web::resource("/{fact_id}").route(web::get().to(Self::get_one_by_id)));
     }
 
-    async fn get_all(data: web::Data<AppState<P>>) -> Result<HttpResponse, ErrorReponse> {
+    async fn get_all(data: web::Data<RestAppState<P>>) -> Result<HttpResponse, ErrorReponse> {
         let get_all_dog_facts_usecase =
             GetAllDogFactsUseCase::<P, R>::new(data.persistence_service.clone());
         let facts = get_all_dog_facts_usecase.execute().await?;
@@ -45,7 +41,7 @@ where
     }
 
     async fn get_one_by_id(
-        data: web::Data<AppState<P>>,
+        data: web::Data<RestAppState<P>>,
         path: web::Path<(i32,)>,
     ) -> Result<HttpResponse, ErrorReponse> {
         let fact_id = path.into_inner().0;

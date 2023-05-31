@@ -1,6 +1,4 @@
-use crate::dog_facts::{
-    dog_facts_payloads::DogFactPayload, dog_facts_presenters::DogFactPresenter,
-};
+use super::{payloads::DogFactPayload, presenters::DogFactPresenter};
 use app_core::mappers::presenter::ApiMapper;
 use app_domain::entities::DogFactEntity;
 

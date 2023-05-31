@@ -1,3 +1,5 @@
 pub mod cat_facts;
 pub mod dog_facts;
-pub mod shared;
+mod shared;
+
+pub use shared::{app_state::RestAppState, routes::RestControllers};

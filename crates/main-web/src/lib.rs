@@ -2,7 +2,7 @@ use std::{env, net::TcpListener};
 
 use actix_web::middleware::Logger;
 use actix_web::{rt, web, App, HttpServer};
-use presenter_rest::shared::app_state::AppState;
+use presenter_rest::RestAppState;
 use service_auth::{cat_facts_service::CatFactsserviceHTTP, connection::HttpConnection};
 use service_db::db_service::{CatRepoPG, DogRepoPG, PersistencePG};
 
@@ -15,7 +15,7 @@ pub async fn setup(
 
     let http_connection = HttpConnection {};
 
-    let data = web::Data::new(AppState {
+    let data = web::Data::new(RestAppState {
         auth_service: Box::new(CatFactsserviceHTTP {
             http_connection,
             source: cats_source,
@@ -27,15 +27,11 @@ pub async fn setup(
 
     let server = HttpServer::new(move || {
         App::new()
-                .app_data(data.clone())
-                .wrap(Logger::default())
-                .configure(
-                    presenter_rest::shared::routes::RestControllers::<
-                        PersistencePG,
-                        DogRepoPG,
-                        CatRepoPG,
-                    >::routes,
-                )
+            .app_data(data.clone())
+            .wrap(Logger::default())
+            .configure(
+                presenter_rest::RestControllers::<PersistencePG, DogRepoPG, CatRepoPG>::routes,
+            )
     })
     .listen(listener)?
     .run();

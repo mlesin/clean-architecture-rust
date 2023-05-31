@@ -1,4 +1,7 @@
-pub mod dog_facts_controllers;
-pub mod dog_facts_mappers;
-pub mod dog_facts_payloads;
-pub mod dog_facts_presenters;
+mod controllers;
+mod mappers;
+mod payloads;
+mod presenters;
+
+pub use controllers::DogFactControllers;
+pub use presenters::DogFactPresenter;

@@ -3,10 +3,7 @@ use std::marker::PhantomData;
 use actix_web::web;
 use app_core::services::{CatRepo, DogRepo, Persistence, Transaction};
 
-use crate::{
-    cat_facts::cat_facts_controllers::CatFactControllers,
-    dog_facts::dog_facts_controllers::DogFactControllers,
-};
+use crate::{cat_facts::CatFactControllers, dog_facts::DogFactControllers};
 
 pub struct RestControllers<P, D, C> {
     persistance: PhantomData<P>,

@@ -1,11 +1,7 @@
 use std::marker::PhantomData;
 
-use crate::{
-    cat_facts::{
-        cat_facts_mappers::CatFactPresenterMapper, cat_facts_presenters::CatFactPresenter,
-    },
-    shared::{app_state::AppState, error_presenter::ErrorReponse},
-};
+use super::{mappers::CatFactPresenterMapper, presenters::CatFactPresenter};
+use crate::shared::{app_state::RestAppState, error::ErrorReponse};
 use actix_web::{web, HttpResponse};
 use app_core::{
     mappers::presenter::ApiMapper,
@@ -35,7 +31,9 @@ where
             .service(web::resource("/random").route(web::get().to(Self::get_one_random_cat_fact)));
     }
 
-    async fn get_all_cat_facts(data: web::Data<AppState<P>>) -> Result<HttpResponse, ErrorReponse> {
+    async fn get_all_cat_facts(
+        data: web::Data<RestAppState<P>>,
+    ) -> Result<HttpResponse, ErrorReponse> {
         let get_all_cat_facts_usecase =
             GetAllCatFactsUseCase::<P, R>::new(data.persistence_service.clone());
         let facts = get_all_cat_facts_usecase.execute().await?;
@@ -49,7 +47,7 @@ where
     }
 
     async fn get_one_random_cat_fact(
-        data: web::Data<AppState<P>>,
+        data: web::Data<RestAppState<P>>,
     ) -> Result<HttpResponse, ErrorReponse> {
         let get_one_random_cat_fact_usecase =
             GetOneRandomCatFactUseCase::<P, R>::new(data.persistence_service.clone());

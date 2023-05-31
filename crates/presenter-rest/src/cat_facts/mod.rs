@@ -1,4 +1,7 @@
-pub mod cat_facts_controllers;
-pub mod cat_facts_mappers;
-pub mod cat_facts_payloads;
-pub mod cat_facts_presenters;
+mod controllers;
+mod mappers;
+mod payloads;
+mod presenters;
+
+pub use controllers::CatFactControllers;
+pub use presenters::CatFactPresenter;

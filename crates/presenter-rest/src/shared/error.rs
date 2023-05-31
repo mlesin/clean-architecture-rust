@@ -6,7 +6,7 @@ use serde::Serialize;
 use thiserror::Error;
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ErrorPresenter {
+pub struct PresenterError {
     pub code: u16,
     pub error: String,
     pub message: String,
@@ -26,7 +26,7 @@ impl ResponseError for ErrorReponse {
 
     fn error_response(&self) -> HttpResponse {
         let status_code = self.status_code();
-        let error_response = ErrorPresenter {
+        let error_response = PresenterError {
             code: status_code.as_u16(),
             message: status_code.to_string(),
             error: self.error.clone(),
