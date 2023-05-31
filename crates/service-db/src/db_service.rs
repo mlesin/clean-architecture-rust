@@ -39,7 +39,7 @@ impl PersistencePG {
 }
 
 #[async_trait]
-impl<'a> Persistence for PersistencePG {
+impl Persistence for PersistencePG {
     type Transaction = TransactionPG;
     async fn get_transaction(&self) -> Result<TransactionPG, services::Error> {
         let tx = self

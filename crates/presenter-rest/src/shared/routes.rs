@@ -14,7 +14,7 @@ pub struct RestControllers<P, D, C> {
     cat_repository: PhantomData<C>,
 }
 
-impl<'a, P, D, C> RestControllers<P, D, C>
+impl<P, D, C> RestControllers<P, D, C>
 where
     P: Persistence + Clone,
     <P as Persistence>::Transaction: Transaction,
