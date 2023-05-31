@@ -1,10 +1,9 @@
 use std::marker::PhantomData;
 
-use crate::{
-    services::{DBDogRepo, Persistence, Transaction},
-    utils::error_handling_utils::ErrorHandlingUtils,
-};
-use app_domain::{entities::DogFactEntity, error::AppError};
+use crate::services::{DogRepo, Persistence, Transaction};
+use app_domain::entities::DogFactEntity;
+
+use super::UseCaseError;
 
 pub struct GetOneDogFactByIdUseCase<P, R> {
     persistance: P,
@@ -24,25 +23,18 @@ impl<P, DR> GetOneDogFactByIdUseCase<P, DR>
 where
     P: Persistence,
     <P as Persistence>::Transaction: Transaction,
-    DR: DBDogRepo<P>,
+    DR: DogRepo<P>,
 {
-    pub async fn execute(&self, dog_fact_id: &i32) -> Result<DogFactEntity, AppError> {
+    pub async fn execute(&self, dog_fact_id: &i32) -> Result<DogFactEntity, UseCaseError> {
         let dog_fact = {
-            let mut tx = self.persistance.get_transaction().await.unwrap(); //FIXME
-            let fact = DR::get_dog_fact_by_id(&mut tx, *dog_fact_id)
-                .await
-                .map_err(|_| {
-                    ErrorHandlingUtils::business_error(
-                        "Cannot get single dog fact",
-                        None, //FIXME Some(e),
-                    )
-                })?;
+            let mut tx = self.persistance.get_transaction().await?;
+            let fact = DR::get_dog_fact_by_id(&mut tx, *dog_fact_id).await?;
             // transaction is dropped if repo gets out of scope without commit
-            tx.commit().await.unwrap(); //FIXME
+            tx.commit().await?;
             fact
         };
 
-        Ok(dog_fact)
+        Ok(dog_fact.ok_or(UseCaseError::Business("No dog fact found".into()))?)
     }
 }
 
@@ -52,7 +44,7 @@ mod tests {
     use lazy_static::lazy_static;
     use std::sync::{Mutex, MutexGuard};
 
-    use crate::services::{MockDBDogRepo, MockPersistence, MockTransaction};
+    use crate::services::{MockDogRepo, MockPersistence, MockTransaction};
 
     lazy_static! {
         static ref MTX: Mutex<()> = Mutex::new(());
@@ -70,6 +62,9 @@ mod tests {
         }
     }
 
+    type MockRepo = MockDogRepo<MockPersistence>;
+    type MockUseCase = GetOneDogFactByIdUseCase<MockPersistence, MockRepo>;
+
     #[actix_rt::test]
     async fn test_should_return_error_with_generic_message_when_unexpected_repo_error() {
         let _m = get_lock(&MTX);
@@ -82,23 +77,20 @@ mod tests {
             .returning(|| Ok(MockTransaction::new()));
 
         // given the "all dog facts" usecase repo with an unexpected random error
-        let repo_ctx = MockDBDogRepo::<MockPersistence>::get_dog_fact_by_id_context();
+        let repo_ctx = MockRepo::get_dog_fact_by_id_context();
         repo_ctx
             .expect()
             .times(1)
-            .returning(|_tx, _id| Err(crate::services::Error::DatabaseError));
+            .returning(|_tx, _id| Err(crate::services::RepositoryError("Oh no!".into())));
 
         // when calling usecase
-        let get_one_dog_fact_by_id_usecase = GetOneDogFactByIdUseCase::<
-            MockPersistence,
-            MockDBDogRepo<MockPersistence>,
-        >::new(persistence);
+        let get_one_dog_fact_by_id_usecase = MockUseCase::new(persistence);
         let data = get_one_dog_fact_by_id_usecase.execute(&1).await;
 
         // then exception
         assert!(data.is_err());
         let result = data.unwrap_err();
-        assert_eq!("Cannot get single dog fact", result.message);
+        assert_eq!("Repository error: Oh no!", result.to_string());
     }
 
     #[actix_rt::test]
@@ -117,19 +109,16 @@ mod tests {
             });
 
         // given the "one dog fact by id" usecase repo returning one result
-        let repo_ctx = MockDBDogRepo::<MockPersistence>::get_dog_fact_by_id_context();
+        let repo_ctx = MockRepo::get_dog_fact_by_id_context();
         repo_ctx.expect().times(1).returning(|_tx, _id| {
-            Ok(DogFactEntity {
+            Ok(Some(DogFactEntity {
                 fact_id: 1,
                 fact: String::from("fact1"),
-            })
+            }))
         });
 
         // when calling usecase
-        let get_one_dog_fact_by_id_usecase = GetOneDogFactByIdUseCase::<
-            MockPersistence,
-            MockDBDogRepo<MockPersistence>,
-        >::new(persistence);
+        let get_one_dog_fact_by_id_usecase = MockUseCase::new(persistence);
         let data = get_one_dog_fact_by_id_usecase.execute(&1).await.unwrap();
 
         // then assert the result is the expected entity

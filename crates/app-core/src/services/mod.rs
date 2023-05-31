@@ -1,5 +1,5 @@
 mod auth;
-mod database;
+mod persistence;
 
 pub use auth::*;
-pub use database::*;
+pub use persistence::*;

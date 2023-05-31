@@ -9,7 +9,7 @@ use crate::{
 use actix_web::{web, HttpResponse};
 use app_core::{
     mappers::presenter::ApiMapper,
-    services::{DBDogRepo, Persistence, Transaction},
+    services::{DogRepo, Persistence, Transaction},
     usecases::{
         get_all_dog_facts::GetAllDogFactsUseCase, get_one_dog_fact_by_id::GetOneDogFactByIdUseCase,
     },
@@ -23,7 +23,7 @@ pub struct DogFactControllers<P, R> {
 impl<P, R> DogFactControllers<P, R>
 where
     P: Persistence + Clone,
-    R: DBDogRepo<P>,
+    R: DogRepo<P>,
     <P as Persistence>::Transaction: Transaction,
 {
     pub fn routes(cfg: &mut web::ServiceConfig) {
@@ -34,13 +34,10 @@ where
     async fn get_all(data: web::Data<AppState<P>>) -> Result<HttpResponse, ErrorReponse> {
         let get_all_dog_facts_usecase =
             GetAllDogFactsUseCase::<P, R>::new(data.persistence_service.clone());
-        let dog_facts = get_all_dog_facts_usecase
-            .execute()
-            .await
-            .map_err(ErrorReponse::map_io_error)?;
+        let facts = get_all_dog_facts_usecase.execute().await?;
 
         Ok(HttpResponse::Ok().json(
-            dog_facts
+            facts
                 .into_iter()
                 .map(DogFactPresenterMapper::to_api)
                 .collect::<Vec<DogFactPresenter>>(),
@@ -54,11 +51,8 @@ where
         let fact_id = path.into_inner().0;
         let get_one_dog_fact_by_id_usecase =
             GetOneDogFactByIdUseCase::<P, R>::new(data.persistence_service.clone());
-        let dog_fact = get_one_dog_fact_by_id_usecase
-            .execute(&fact_id)
-            .await
-            .map_err(ErrorReponse::map_io_error)?;
+        let fact = get_one_dog_fact_by_id_usecase.execute(&fact_id).await?;
 
-        Ok(HttpResponse::Ok().json(DogFactPresenterMapper::to_api(dog_fact)))
+        Ok(HttpResponse::Ok().json(DogFactPresenterMapper::to_api(fact)))
     }
 }

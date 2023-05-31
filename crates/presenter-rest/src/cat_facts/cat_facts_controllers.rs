@@ -9,7 +9,7 @@ use crate::{
 use actix_web::{web, HttpResponse};
 use app_core::{
     mappers::presenter::ApiMapper,
-    services::{DBCatRepo, Persistence},
+    services::{CatRepo, Persistence},
 };
 use app_core::{
     services::Transaction,
@@ -27,7 +27,7 @@ pub struct CatFactControllers<P, R> {
 impl<P, R> CatFactControllers<P, R>
 where
     P: Persistence + Clone,
-    R: DBCatRepo<P>,
+    R: CatRepo<P>,
     <P as Persistence>::Transaction: Transaction,
 {
     pub fn routes(cfg: &mut web::ServiceConfig) {
@@ -38,16 +38,14 @@ where
     async fn get_all_cat_facts(data: web::Data<AppState<P>>) -> Result<HttpResponse, ErrorReponse> {
         let get_all_cat_facts_usecase =
             GetAllCatFactsUseCase::<P, R>::new(data.persistence_service.clone());
-        let cat_facts = get_all_cat_facts_usecase.execute().await;
+        let facts = get_all_cat_facts_usecase.execute().await?;
 
-        cat_facts.map_err(ErrorReponse::map_io_error).map(|facts| {
-            HttpResponse::Ok().json(
-                facts
-                    .into_iter()
-                    .map(CatFactPresenterMapper::to_api)
-                    .collect::<Vec<CatFactPresenter>>(),
-            )
-        })
+        Ok(HttpResponse::Ok().json(
+            facts
+                .into_iter()
+                .map(CatFactPresenterMapper::to_api)
+                .collect::<Vec<CatFactPresenter>>(),
+        ))
     }
 
     async fn get_one_random_cat_fact(
@@ -55,10 +53,8 @@ where
     ) -> Result<HttpResponse, ErrorReponse> {
         let get_one_random_cat_fact_usecase =
             GetOneRandomCatFactUseCase::<P, R>::new(data.persistence_service.clone());
-        let cat_fact = get_one_random_cat_fact_usecase.execute().await;
+        let fact = get_one_random_cat_fact_usecase.execute().await?;
 
-        cat_fact
-            .map_err(ErrorReponse::map_io_error)
-            .map(|fact| HttpResponse::Ok().json(CatFactPresenterMapper::to_api(fact)))
+        Ok(HttpResponse::Ok().json(CatFactPresenterMapper::to_api(fact)))
     }
 }

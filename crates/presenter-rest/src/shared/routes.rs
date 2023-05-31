@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use actix_web::web;
-use app_core::services::{DBCatRepo, DBDogRepo, Persistence, Transaction};
+use app_core::services::{CatRepo, DogRepo, Persistence, Transaction};
 
 use crate::{
     cat_facts::cat_facts_controllers::CatFactControllers,
@@ -18,8 +18,8 @@ impl<P, D, C> RestControllers<P, D, C>
 where
     P: Persistence + Clone,
     <P as Persistence>::Transaction: Transaction,
-    D: DBDogRepo<P>,
-    C: DBCatRepo<P>,
+    D: DogRepo<P>,
+    C: CatRepo<P>,
 {
     pub fn routes(config: &mut web::ServiceConfig) {
         config

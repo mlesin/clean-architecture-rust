@@ -4,7 +4,7 @@ use actix_web::middleware::Logger;
 use actix_web::{rt, web, App, HttpServer};
 use presenter_rest::shared::app_state::AppState;
 use service_auth::{cat_facts_service::CatFactsserviceHTTP, connection::HttpConnection};
-use service_db::db_service::{CatRepo, DogRepo, PersistencePG};
+use service_db::db_service::{CatRepoPG, DogRepoPG, PersistencePG};
 
 pub async fn setup(
     listener: TcpListener,
@@ -32,8 +32,8 @@ pub async fn setup(
                 .configure(
                     presenter_rest::shared::routes::RestControllers::<
                         PersistencePG,
-                        DogRepo,
-                        CatRepo,
+                        DogRepoPG,
+                        CatRepoPG,
                     >::routes,
                 )
     })

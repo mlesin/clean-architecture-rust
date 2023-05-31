@@ -1,10 +1,9 @@
 use std::marker::PhantomData;
 
-use crate::{
-    services::{DBDogRepo, Persistence, Transaction},
-    utils::error_handling_utils::ErrorHandlingUtils,
-};
-use app_domain::{entities::DogFactEntity, error::AppError};
+use crate::services::{DogRepo, Persistence, Transaction};
+use app_domain::entities::DogFactEntity;
+
+use super::UseCaseError;
 
 pub struct GetAllDogFactsUseCase<P, R> {
     persistance: P,
@@ -24,21 +23,14 @@ impl<P, DR> GetAllDogFactsUseCase<P, DR>
 where
     P: Persistence,
     <P as Persistence>::Transaction: Transaction,
-    DR: DBDogRepo<P>,
+    DR: DogRepo<P>,
 {
-    pub async fn execute(&self) -> Result<Vec<DogFactEntity>, AppError> {
+    pub async fn execute(&self) -> Result<Vec<DogFactEntity>, UseCaseError> {
         let dog_facts = {
-            let mut tx = self.persistance.get_transaction().await.unwrap(); //FIXME
-
-            // let mut tx = conn.start_transaction().unwrap(); //FIXME
-            let facts = DR::get_all_dog_facts(&mut tx).await.map_err(|_| {
-                ErrorHandlingUtils::business_error(
-                    "Cannot get all dog facts",
-                    None, //FIXME Some(e),
-                )
-            })?;
+            let mut tx = self.persistance.get_transaction().await?;
+            let facts = DR::get_all_dog_facts(&mut tx).await?;
             // transaction is dropped if repo gets out of scope without commit
-            tx.commit().await.unwrap(); //FIXME
+            tx.commit().await?;
             facts
         };
 
@@ -52,7 +44,7 @@ mod tests {
     use lazy_static::lazy_static;
     use std::sync::{Mutex, MutexGuard};
 
-    use crate::services::{MockDBDogRepo, MockPersistence, MockTransaction};
+    use crate::services::{MockDogRepo, MockPersistence, MockTransaction};
 
     lazy_static! {
         static ref MTX: Mutex<()> = Mutex::new(());
@@ -70,6 +62,9 @@ mod tests {
         }
     }
 
+    type MockRepo = MockDogRepo<MockPersistence>;
+    type MockUseCase = GetAllDogFactsUseCase<MockPersistence, MockRepo>;
+
     #[actix_rt::test]
     async fn test_should_return_error_with_generic_message_when_unexpected_repo_error() {
         let _m = get_lock(&MTX);
@@ -82,22 +77,19 @@ mod tests {
             .returning(|| Ok(MockTransaction::new()));
 
         // given the "all dog facts" usecase repo with an unexpected random error
-        let repo_ctx = MockDBDogRepo::<MockPersistence>::get_all_dog_facts_context();
+        let repo_ctx = MockRepo::get_all_dog_facts_context();
         repo_ctx
             .expect()
-            .returning(|_tx| Err(crate::services::Error::DatabaseError));
+            .returning(|_tx| Err(crate::services::RepositoryError("Oh no!".into())));
 
         // when calling usecase
-        let get_all_dog_facts_usecase = GetAllDogFactsUseCase::<
-            MockPersistence,
-            MockDBDogRepo<MockPersistence>,
-        >::new(persistence);
+        let get_all_dog_facts_usecase = MockUseCase::new(persistence);
         let data = get_all_dog_facts_usecase.execute().await;
 
         // then exception
         assert!(data.is_err());
         let result = data.unwrap_err();
-        assert_eq!("Cannot get all dog facts", result.message);
+        assert_eq!("Repository error: Oh no!", result.to_string());
     }
 
     #[actix_rt::test]
@@ -116,16 +108,13 @@ mod tests {
             });
 
         // given the "all dog facts" usecase repo returning an empty list
-        let repo_ctx = MockDBDogRepo::<MockPersistence>::get_all_dog_facts_context();
+        let repo_ctx = MockRepo::get_all_dog_facts_context();
         repo_ctx
             .expect()
             .returning(|_tx| Ok(Vec::<DogFactEntity>::new()));
 
         // when calling usecase
-        let get_all_dog_facts_usecase = GetAllDogFactsUseCase::<
-            MockPersistence,
-            MockDBDogRepo<MockPersistence>,
-        >::new(persistence);
+        let get_all_dog_facts_usecase = MockUseCase::new(persistence);
         let data = get_all_dog_facts_usecase.execute().await.unwrap();
 
         // then assert the result is an empty list
@@ -148,7 +137,7 @@ mod tests {
             });
 
         // given the "all dog facts" usecase repo returning a list of 2 entities
-        let repo_ctx = MockDBDogRepo::<MockPersistence>::get_all_dog_facts_context();
+        let repo_ctx = MockRepo::get_all_dog_facts_context();
         repo_ctx.expect().returning(|_tx| {
             Ok(vec![
                 DogFactEntity {
@@ -163,10 +152,7 @@ mod tests {
         });
 
         // when calling usecase
-        let get_all_dog_facts_usecase = GetAllDogFactsUseCase::<
-            MockPersistence,
-            MockDBDogRepo<MockPersistence>,
-        >::new(persistence);
+        let get_all_dog_facts_usecase = MockUseCase::new(persistence);
         let data = get_all_dog_facts_usecase.execute().await.unwrap();
 
         // then assert the result is an empty list

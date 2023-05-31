@@ -1,5 +1,5 @@
 use actix_web::{error::ResponseError, http::StatusCode, HttpResponse};
-use app_domain::error::AppError;
+use app_core::usecases::UseCaseError;
 use derive_more::Display;
 use serde::Deserialize;
 use serde::Serialize;
@@ -35,24 +35,24 @@ impl ResponseError for ErrorReponse {
     }
 }
 
-impl ErrorReponse {
-    pub fn map_io_error(e: AppError) -> ErrorReponse {
-        match e.get_error_code() {
-            400 => ErrorReponse {
-                status_code: StatusCode::BAD_REQUEST,
-                error: e.get_error_message(),
-            },
-            401 => ErrorReponse {
-                status_code: StatusCode::UNAUTHORIZED,
-                error: e.get_error_message(),
-            },
-            403 => ErrorReponse {
-                status_code: StatusCode::FORBIDDEN,
-                error: e.get_error_message(),
-            },
-            _ => ErrorReponse {
+impl From<UseCaseError> for ErrorReponse {
+    fn from(value: UseCaseError) -> Self {
+        match value {
+            UseCaseError::Repository(e) => ErrorReponse {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
-                error: String::from("Error: an unknown error occured"),
+                error: e,
+            },
+            UseCaseError::Business(e) => ErrorReponse {
+                status_code: StatusCode::BAD_REQUEST,
+                error: e,
+            },
+            UseCaseError::Unauthorized(e) => ErrorReponse {
+                status_code: StatusCode::UNAUTHORIZED,
+                error: e,
+            },
+            UseCaseError::Forbidden(e) => ErrorReponse {
+                status_code: StatusCode::FORBIDDEN,
+                error: e,
             },
         }
     }
